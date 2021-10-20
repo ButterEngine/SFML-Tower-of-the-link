@@ -1,0 +1,4 @@
+﻿  Enemy.cpp
+C:\Programing\vs\Hello_SFML\Hello SFML\Enemy.cpp(46,21): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Programing\vs\Hello_SFML\Hello SFML\Enemy.cpp(47,21): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+  Hello SFML.vcxproj -> C:\Programing\vs\Hello_SFML\Hello SFML\Debug\Hello SFML.exe
