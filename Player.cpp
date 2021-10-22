@@ -4,10 +4,11 @@
 #include "MapHandler.h"
 #include <math.h>
 
-Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed) :
+Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, float Health) :
 	animation(texture, imageCount, switchTime)
 {
 	this->speed = speed;
+	this->Health = Health;
 	row = 0;
 	body.setSize(sf::Vector2f(261.0f, 234.0f));
 	body.setPosition(3840, 5000);
@@ -37,7 +38,7 @@ void Player::Update(float deltatime, int map[64][64])
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		{
-			playerTexture.loadFromFile("assets/texture/player_left.png");
+			//playerTexture.loadFromFile("assets/texture/player_left.png");
 			if (map[Check_Player_Position().y][Check_Player_Position().x - 1] != 1)
 			{
 				movement.x -= speed * deltatime;
@@ -45,7 +46,7 @@ void Player::Update(float deltatime, int map[64][64])
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
-			playerTexture.loadFromFile("assets/texture/player_right.png");
+			//playerTexture.loadFromFile("assets/texture/player_right.png");
 			if (map[Check_Player_Position().y][Check_Player_Position().x + 1] != 1)
 			{
 				movement.x += speed * deltatime;
@@ -95,3 +96,19 @@ void Player::Draw(sf::RenderWindow& window)
 {
 	window.draw(body);
 }
+
+void Player::Hit()
+{
+	Health -= 10.0f;
+	std::cout << Health << "\n";
+}
+
+bool Player::Die()
+{
+	if (Health <= 0.0f)
+	{
+		return true;
+	}
+	return false;
+}
+

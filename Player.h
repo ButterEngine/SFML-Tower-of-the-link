@@ -7,10 +7,12 @@
 class Player
 {
 public:
-	Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed);
+	Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, float Health);
 
 	void Update(float deltatime, int map[64][64]);
 	void Draw(sf::RenderWindow& window);
+	void Hit();
+	bool Die();
 
 	sf::Vector2i Check_Player_Position();
 	sf::Vector2f GetPostion() { return body.getPosition(); }
@@ -22,5 +24,6 @@ private:
 	Animation animation;
 	unsigned int row;
 	float speed;
+	float Health;
 };
 

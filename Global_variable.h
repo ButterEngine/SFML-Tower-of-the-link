@@ -9,12 +9,12 @@
 using namespace std;
 
 extern vector <Enemy> arrayofEnemy;
-extern int bulletNumber;
 extern vector <Bullet> arrayofBullet;
 extern vector <Platform> arrayofplatform;
 extern sf::RenderWindow window;
 extern sf::Texture playerTexture;
 extern sf::Texture bullettexture1;
+extern int wave;
 
 class Global_variable
 {
