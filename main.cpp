@@ -4,6 +4,10 @@
 #include"MapHandler.h"
 #include"Global_variable.h"
 #include"Enemy.h"
+#include"Aoetower.h"
+#include"Aoetower.h"
+#include"Item.h"
+
 int main()
 {
 	int map_test[64][64];
@@ -81,22 +85,20 @@ int main()
 	}
 
 	playerTexture.loadFromFile("assets/texture/player_right.png");
-	Player player(&playerTexture, sf::Vector2u(3, 4), 0.2f, 450.0f, 100.0f);
+	Player player(&playerTexture, sf::Vector2u(3, 4), 0.2f, 450.0f);
 	MapHandler Map_01;
 	sf::Texture map;
 	sf::View view(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(5376, 3024));
-	map.loadFromFile("assets/texture/map/Map_4.png");
+	map.loadFromFile("assets/texture/map/Map_5.png");
 	sf::RectangleShape background(sf::Vector2f(7680.0f, 7680.0f));
 	background.setPosition(sf::Vector2f(0.0f, 0.0f));
 	background.setTexture(&map);
-
+	Aoetower Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f);
+	arrayofAoetower.push_back(Tower_test);
 	sf::Texture enemytexture1;
 	float deltaTime = 0.0f;
 	Map_01.MapCreate(map_test);
 	sf::Clock clock;
-	float attackCooldownMax = 10.0f;
-	float attackCooldown = attackCooldownMax;
-	bool canAttack = false;
 	float spawnCooldownMax = 30.0f;
 	float spawnCooldown = spawnCooldownMax;
 	bool canHitted;
@@ -106,6 +108,10 @@ int main()
 	bool col = false;
 	wave = 1;
 	int Enemy_Count = 0;
+	int itemType = 0;
+	sf::Clock cooldown;
+	float cooldown_click = 0.0f;
+	srand(time(NULL));
 
 	while (window.isOpen()) {
 		view.setCenter(player.getBody().getPosition());
@@ -116,6 +122,7 @@ int main()
 				window.close();
 			}
 		}
+		cooldown_click -= cooldown.restart().asSeconds();
 		//Aim
 		sf::Vector2f mousePosWindow;
 		mousePosWindow = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -181,20 +188,8 @@ int main()
 		window.draw(background);
 		//Map_01.MapDraw(arrayofplatform);
 		player.Draw(window);
+		Tower_test.Draw(window);
 		/////////////enemy1.Draw(window);
-		if (attackCooldown < attackCooldownMax)
-		{
-			attackCooldown += 0.15f;
-		}
-		if (attackCooldown >= attackCooldownMax)
-		{
-			attackCooldown = 0.0f;
-			canAttack = true;
-		}
-		else
-		{
-			canAttack = false;
-		}
 
 		if (hitCooldown < hitCooldownMax)
 		{
@@ -209,8 +204,9 @@ int main()
 		{
 			canHitted = false;
 		}
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && canAttack)
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && cooldown_click <= 0)
 		{
+			cooldown_click = 0.5f;
 			Bullet arrow1(&bullettexture1, sf::Vector2f(30.0f, 30.0f), sf::Vector2f(player.getBody().getPosition().x, player.getBody().getPosition().y), rotation);
 			arrow1.setvelo(aimDirNorm * 15.0f);
 			arrow1.getBody().setRotation(rotation);
@@ -221,6 +217,11 @@ int main()
 			arrayofEnemy[i].Update(deltaTime, map_test);
 			window.draw(arrayofEnemy[i].getBody());
 			window.draw(arrayofEnemy[i].getHealthbar());
+		}
+
+		for (int i = 0; i < arrayofItem.size(); i++)
+		{
+			window.draw(arrayofItem[i].getBody());
 		}
 		
 		for (int i = 0; i < arrayofBullet.size(); i++)
@@ -244,6 +245,12 @@ int main()
 					arrayofEnemy[j].Hit();
 					if (arrayofEnemy[j].Die())
 					{
+						if ((1 + rand() % 4) == 4)
+						{
+							itemType = (1 + rand() % 4);
+							Item Item1(itemType, arrayofEnemy[j].GetPostion());
+							arrayofItem.push_back(Item1);
+						}
 						arrayofEnemy.erase(arrayofEnemy.begin() + j);
 					}
 					col = true;
@@ -258,6 +265,20 @@ int main()
 			arrayofBullet[i].setColor(sf::Color::Cyan);
 			window.draw(arrayofBullet[i].getBody());
 		}
+		for (int i = 0; i < arrayofAoetower.size(); i++)
+		{
+			for (int j = 0; j < arrayofEnemy.size(); j++)
+			{
+				if (arrayofAoetower[i].GetCollider().CheckCollision(arrayofEnemy[j].GetCollider()) && canHitted)
+				{
+					arrayofEnemy[j].Hit();
+				}
+				if (arrayofEnemy[j].Die())
+				{
+					arrayofEnemy.erase(arrayofEnemy.begin() + j);
+				}
+			}
+		}
 		for (int i = 0; i < arrayofEnemy.size(); i++)
 		{
 			if (arrayofEnemy[i].getBody().getPosition().y <= 2640)
@@ -266,18 +287,43 @@ int main()
 				continue;
 			}
 		}
+		bool enemy_stuck = false;
 		for (int i = 0; i < arrayofEnemy.size(); i++)
 		{
 			if (arrayofEnemy[i].GetCollider().CheckCollision(player.GetCollider()))
 			{
-				if (canHitted)
+				if (!player.isblock())
 				{
-					player.Hit();
+					arrayofEnemy[i].setCanmove(false);
+					player.setblocked(true);
 				}
+				enemy_stuck = true;
+				arrayofEnemy[i].Attack();
+				std::cout << playerHP << "\n";
+			}
+			else
+			{
+				arrayofEnemy[i].setCanmove(true);
+			}
+		}
+		if (!enemy_stuck)
+		{
+			player.setblocked(false);
+			for (int i = 0; i < arrayofEnemy.size(); i++)
+			{
+				arrayofEnemy[i].setCanmove(true);
+			}
+		}
+		for (int i = 0; i < arrayofItem.size(); i++)
+		{
+			if (arrayofItem[i].GetCollider().CheckCollision(player.GetCollider()))
+			{
+				arrayofItem.erase(arrayofItem.begin() + i);
 			}
 		}
 		if (player.Die())
 		{
+			//std::cout << "Die";
 		}
 		window.setView(view);
 		window.display();

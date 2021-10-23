@@ -7,11 +7,18 @@
 class Player
 {
 public:
-	Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, float Health);
+	Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed);
 
 	void Update(float deltatime, int map[64][64]);
 	void Draw(sf::RenderWindow& window);
-	void Hit();
+	bool isblock()
+	{
+		return blocked;
+	}
+	void setblocked(bool blocked)
+	{
+		this->blocked = blocked;
+	}
 	bool Die();
 
 	sf::Vector2i Check_Player_Position();
@@ -24,6 +31,6 @@ private:
 	Animation animation;
 	unsigned int row;
 	float speed;
-	float Health;
+	bool blocked = false;
 };
 

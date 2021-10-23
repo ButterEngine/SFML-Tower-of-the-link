@@ -10,6 +10,15 @@ public:
 
 	void Update(float deltatime, int map[64][64]);
 	void Draw(sf::RenderWindow& window);
+	void Attack();
+	bool Canmove()
+	{
+		return this->canMove;
+	}
+	void setCanmove(bool canMove)
+	{
+		this->canMove = canMove;
+	}
 	void Hit();
 	bool Die();
 	sf::Vector2i Check_Enemy_Position();
@@ -23,8 +32,11 @@ private:
 	sf::RectangleShape HealthBar;
 	Animation animation;
 	unsigned int row;
+	float cooldown_attack;
+	sf::Clock cooldown;
 	float speed;
 	float Health;
 	bool isLeft = false;
 	bool isUp = false;
+	bool canMove = true;
 };

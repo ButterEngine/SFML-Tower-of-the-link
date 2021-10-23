@@ -12,13 +12,14 @@ float Maxhealth;
 Enemy::Enemy(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, float Health) :
 	animation(texture, imageCount, switchTime)
 {
+	cooldown_attack = 0.0f;
 	this->speed = speed;
 	this->Health = Health;
 	Maxhealth = Health;
 	row = 0;
 	body.setSize(sf::Vector2f(120.0f, 120.0f));
 	HealthBar.setSize(sf::Vector2f((Health/Maxhealth)*120.0f, 20.0f));
-	HealthBar.setFillColor(sf::Color::Blue);
+	HealthBar.setFillColor(sf::Color::Green);
 	if (wave == 1)
 	{
 		body.setFillColor(sf::Color::Red);
@@ -39,32 +40,53 @@ Enemy::Enemy(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, fl
 
 void Enemy::Update(float deltatime, int map[64][64])
 {
+	cooldown_attack -= cooldown.restart().asSeconds();
 	int check = 0;
 	sf::Vector2f movement(0.0f, 0.0f);
-	if (map[Check_Enemy_Position().y - 1][Check_Enemy_Position().x] == 3 || map[Check_Enemy_Position().y - 1][Check_Enemy_Position().x] == 1)
+	if (canMove)
 	{
-		this->isUp = true;
-		this->isLeft = true;
-		movement.y -= speed * deltatime;
-	}
-	else if (map[Check_Enemy_Position().y][Check_Enemy_Position().x - 1] == 3 && this->isLeft)
-	{
-		if (this->isUp || this->isLeft)
+		if (map[Check_Enemy_Position().y - 1][Check_Enemy_Position().x] == 3 || map[Check_Enemy_Position().y - 1][Check_Enemy_Position().x] == 1)
+		{
+			this->isUp = true;
+			this->isLeft = true;
+			movement.y -= speed * deltatime;
+		}
+		else if (map[Check_Enemy_Position().y][Check_Enemy_Position().x - 1] == 3 && this->isLeft)
+		{
+			if (this->isUp || this->isLeft)
+			{
+				this->isUp = false;
+				this->isLeft = true;
+				movement.x -= speed * deltatime;
+			}
+		}
+		else
 		{
 			this->isUp = false;
-			this->isLeft = true;
-			movement.x -= speed * deltatime;
+			this->isLeft = false;
+			movement.x += speed * deltatime;
 		}
+		body.move(movement);
+		HealthBar.move(movement);
 	}
-	else
+	HealthBar.setSize(sf::Vector2f((Health / Maxhealth) * 120.0f, 20.0f));
+	if ((Health / Maxhealth) * 120.0f <= 70)
 	{
-		this->isUp = false;
-		this->isLeft = false;
-		movement.x += speed * deltatime;
+		HealthBar.setFillColor(sf::Color::Yellow);
 	}
-	HealthBar.setSize(sf::Vector2f((Health/Maxhealth) * 120.0f, 20.0f));
-	body.move(movement);
-	HealthBar.move(movement);
+	if ((Health / Maxhealth) * 120.0f <= 40)
+	{
+		HealthBar.setFillColor(sf::Color::Red);
+	}
+}
+
+void Enemy::Attack()
+{
+	if (cooldown_attack <= 0)
+	{
+		cooldown_attack = 1;
+		playerHP -= 5;
+	}
 }
 
 void Enemy::Draw(sf::RenderWindow& window)

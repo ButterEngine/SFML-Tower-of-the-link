@@ -3,12 +3,12 @@
 #include <iostream>
 #include "MapHandler.h"
 #include <math.h>
+#include "Global_variable.h"
 
-Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, float Health) :
+Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed) :
 	animation(texture, imageCount, switchTime)
 {
 	this->speed = speed;
-	this->Health = Health;
 	row = 0;
 	body.setSize(sf::Vector2f(261.0f, 234.0f));
 	body.setPosition(3840, 5000);
@@ -97,15 +97,10 @@ void Player::Draw(sf::RenderWindow& window)
 	window.draw(body);
 }
 
-void Player::Hit()
-{
-	Health -= 10.0f;
-	std::cout << Health << "\n";
-}
 
 bool Player::Die()
 {
-	if (Health <= 0.0f)
+	if (playerHP <= 0.0f)
 	{
 		return true;
 	}
