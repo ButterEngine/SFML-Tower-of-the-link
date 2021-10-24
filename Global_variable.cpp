@@ -4,6 +4,7 @@ vector<Platform> arrayofplatform;
 vector <Bullet> arrayofBullet;
 vector <Enemy> arrayofEnemy;
 sf::RenderWindow window(sf::VideoMode(1920, 1080), "Tower Defense");
+sf::Font Gamefont;
 sf::Texture playerTexture;
 sf::Texture bullettexture1;
 sf::Texture aoetowerTexture;

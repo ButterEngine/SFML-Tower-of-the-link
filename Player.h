@@ -7,7 +7,7 @@
 class Player
 {
 public:
-	Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed);
+	Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, sf::Font* font);
 
 	void Update(float deltatime, int map[64][64]);
 	void Draw(sf::RenderWindow& window);
@@ -28,9 +28,14 @@ public:
 
 private:
 	sf::RectangleShape body;
+	sf::RectangleShape Healthbar;
+	sf::RectangleShape Healthbarframe;
+	sf::RectangleShape MaxHealthbar;
+	sf::Text HP;
 	Animation animation;
 	unsigned int row;
 	float speed;
+	float playerMaxHP = 100;
 	bool blocked = false;
 };
 

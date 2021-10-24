@@ -9,10 +9,11 @@
 
 float Maxhealth;
 
-Enemy::Enemy(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, float Health) :
+Enemy::Enemy(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, float Health, int damage) :
 	animation(texture, imageCount, switchTime)
 {
 	cooldown_attack = 0.0f;
+	this->damage = damage;
 	this->speed = speed;
 	this->Health = Health;
 	Maxhealth = Health;
@@ -80,12 +81,12 @@ void Enemy::Update(float deltatime, int map[64][64])
 	}
 }
 
-void Enemy::Attack()
+void Enemy::Attack(int damage)
 {
 	if (cooldown_attack <= 0)
 	{
 		cooldown_attack = 1;
-		playerHP -= 5;
+		playerHP -= damage;
 	}
 }
 

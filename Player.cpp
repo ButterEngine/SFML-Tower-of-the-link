@@ -5,17 +5,33 @@
 #include <math.h>
 #include "Global_variable.h"
 
-Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed) :
+Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, sf::Font* font) :
 	animation(texture, imageCount, switchTime)
 {
 	this->speed = speed;
 	row = 0;
 	body.setSize(sf::Vector2f(261.0f, 234.0f));
 	body.setPosition(3840, 5000);
-	body.setOrigin(body.getSize() / 2.0f);
+	body.setOrigin(body.getSize() / 1.4f);
+	Healthbar.setSize(sf::Vector2f(playerHP / playerMaxHP * 2000.0f, 100.0f));
+	Healthbar.setPosition(2760.0f, 3660.0f);
+	Healthbar.setFillColor(sf::Color::Green);
+	Healthbar.setOrigin(Healthbar.getSize() / 1.4f);
 
-	////// Sprite
+	Healthbarframe.setSize(sf::Vector2f(playerHP / playerMaxHP * 2040.0f, 140.0f));
+	Healthbarframe.setPosition(2740.0f, 3640.0f);
+	Healthbarframe.setFillColor(sf::Color::White);
+	Healthbarframe.setOrigin(Healthbar.getSize() / 1.4f);
+	Healthbarframe.setOutlineColor(sf::Color::Black);
+	Healthbarframe.setOutlineThickness(20);
+
+	MaxHealthbar.setSize(sf::Vector2f(playerHP / playerMaxHP * 2000.0f, 100.0f));
+	MaxHealthbar.setPosition(2760.0f, 3660.0f);
+	MaxHealthbar.setFillColor(sf::Color::Black);
+	MaxHealthbar.setOrigin(Healthbar.getSize() / 1.4f);
+
 	body.setTexture(texture);
+	HP.setFont(Gamefont);
 
 }
 
@@ -32,6 +48,22 @@ sf::Vector2i Player::Check_Player_Position()
 
 void Player::Update(float deltatime, int map[64][64])
 {
+	if (playerHP >= 0.0f)
+	{
+		Healthbar.setSize(sf::Vector2f(playerHP / playerMaxHP * 2000.0f, 100.0f));
+	}
+	if (playerHP > 50.0f)
+	{
+		Healthbar.setFillColor(sf::Color::Green);
+	}
+	if (playerHP <= 50.0f)
+	{
+		Healthbar.setFillColor(sf::Color::Yellow);
+	}
+	if (playerHP <= 30.0f)
+	{
+		Healthbar.setFillColor(sf::Color::Red);
+	}
 	bool canwalk = true;
 	sf::Vector2f movement(0.0f, 0.0f);
 	if (canwalk)
@@ -89,12 +121,18 @@ void Player::Update(float deltatime, int map[64][64])
 	if (canwalk)
 	{
 		body.move(movement);
+		Healthbar.move(movement);
+		Healthbarframe.move(movement);
+		MaxHealthbar.move(movement);
 	}
 }
 
 void Player::Draw(sf::RenderWindow& window)
 {
 	window.draw(body);
+	window.draw(Healthbarframe);
+	window.draw(MaxHealthbar);
+	window.draw(Healthbar);
 }
 
 

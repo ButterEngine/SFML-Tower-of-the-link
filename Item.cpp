@@ -19,3 +19,15 @@ int Item::getType()
 {
 	return type;
 }
+
+void Item::Useitem(int type)
+{
+	if (type == 1)
+	{
+		playerHP += 20;
+		if (playerHP > 100)
+		{
+			playerHP = 100;
+		}
+	}
+}

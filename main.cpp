@@ -31,27 +31,27 @@ int main()
 			{
 				map_test[i][j] = 1;
 			}
-			else if (j == 32 && i >= 22 && i <= 24)
+			else if (j == 31 && i >= 22 && i <= 24)
 			{
 				map_test[i][j] = 3;
 			}
-			else if (i == 24 && j >= 32 && j <=44)
+			else if (i == 24 && j >= 31 && j <=44)
 			{
 				map_test[i][j] = 3;
 			}
-			else if (j == 44 && i >= 25 && i <= 29)
+			else if (j == 45 && i >= 24 && i <= 29)
 			{
 				map_test[i][j] = 3;
 			}
-			else if (i == 29 && j >= 19 && j <= 44)
+			else if (i == 29 && j >= 19 && j <= 43)
 			{
 				map_test[i][j] = 3;
 			}
-			else if (i == 34 && j >= 19 && j <= 44)
+			else if (i == 34 && j >= 19 && j <= 45)
 			{
 				map_test[i][j] = 3;
 			}
-			else if (i == 39 && j >= 19 && j <= 44)
+			else if (i == 39 && j >= 19 && j <= 45)
 			{
 				map_test[i][j] = 3;
 			}
@@ -71,7 +71,7 @@ int main()
 			{
 				map_test[i][j] = 3;
 			}
-			else if (j == 44 && i >= 34 && i <= 39)
+			else if (j == 45 && i >= 34 && i <= 39)
 			{
 				map_test[i][j] = 3;
 			}
@@ -79,17 +79,18 @@ int main()
 			{
 				map_test[i][j] = 0;
 			}
-			//std::cout << map_test[i][j];
+			std::cout << map_test[i][j];
 		}
-		//std::cout << std::endl;
+		std::cout << std::endl;
 	}
 
+	Gamefont.loadFromFile("assets/font/GameFont.otf");
 	playerTexture.loadFromFile("assets/texture/player_right.png");
-	Player player(&playerTexture, sf::Vector2u(3, 4), 0.2f, 450.0f);
+	Player player(&playerTexture, sf::Vector2u(3, 4), 0.2f, 450.0f, &Gamefont);
 	MapHandler Map_01;
 	sf::Texture map;
 	sf::View view(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(5376, 3024));
-	map.loadFromFile("assets/texture/map/Map_5.png");
+	map.loadFromFile("assets/texture/map/Map_6.png");
 	sf::RectangleShape background(sf::Vector2f(7680.0f, 7680.0f));
 	background.setPosition(sf::Vector2f(0.0f, 0.0f));
 	background.setTexture(&map);
@@ -112,6 +113,7 @@ int main()
 	sf::Clock cooldown;
 	float cooldown_click = 0.0f;
 	srand(time(NULL));
+	int enemydamage = 5;
 
 	while (window.isOpen()) {
 		view.setCenter(player.getBody().getPosition());
@@ -156,19 +158,19 @@ int main()
 		{
 			if (wave == 1)
 			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 50.0f);
+				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 50.0f, enemydamage * wave);
 				arrayofEnemy.push_back(enemy1);
 				Enemy_Count++;
 			}
 			if (wave == 2)
 			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 70.0f);
+				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 70.0f, enemydamage* wave);
 				arrayofEnemy.push_back(enemy1);
 				Enemy_Count++;
 			}
 			if (wave == 3)
 			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 100.0f);
+				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 100.0f, enemydamage* wave);
 				arrayofEnemy.push_back(enemy1);
 				Enemy_Count++;
 			}
@@ -247,7 +249,8 @@ int main()
 					{
 						if ((1 + rand() % 4) == 4)
 						{
-							itemType = (1 + rand() % 4);
+							//itemType = (1 + rand() % 4);
+							itemType = 1;
 							Item Item1(itemType, arrayofEnemy[j].GetPostion());
 							arrayofItem.push_back(Item1);
 						}
@@ -298,7 +301,7 @@ int main()
 					player.setblocked(true);
 				}
 				enemy_stuck = true;
-				arrayofEnemy[i].Attack();
+				arrayofEnemy[i].Attack(arrayofEnemy[i].getDamage());
 				std::cout << playerHP << "\n";
 			}
 			else
@@ -318,12 +321,17 @@ int main()
 		{
 			if (arrayofItem[i].GetCollider().CheckCollision(player.GetCollider()))
 			{
+				arrayofItem[i].Useitem(arrayofItem[i].getType());
 				arrayofItem.erase(arrayofItem.begin() + i);
 			}
 		}
 		if (player.Die())
 		{
-			//std::cout << "Die";
+			window.close();
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		{
+			window.close();
 		}
 		window.setView(view);
 		window.display();

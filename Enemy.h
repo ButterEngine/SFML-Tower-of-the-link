@@ -6,11 +6,11 @@
 class Enemy
 {
 public:
-	Enemy(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, float Health);
+	Enemy(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, float Health, int damage);
 
 	void Update(float deltatime, int map[64][64]);
 	void Draw(sf::RenderWindow& window);
-	void Attack();
+	void Attack(int damage);
 	bool Canmove()
 	{
 		return this->canMove;
@@ -19,6 +19,7 @@ public:
 	{
 		this->canMove = canMove;
 	}
+	int getDamage() { return damage; }
 	void Hit();
 	bool Die();
 	sf::Vector2i Check_Enemy_Position();
@@ -34,6 +35,7 @@ private:
 	unsigned int row;
 	float cooldown_attack;
 	sf::Clock cooldown;
+	int damage;
 	float speed;
 	float Health;
 	bool isLeft = false;

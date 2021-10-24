@@ -9,6 +9,7 @@ public:
 	Item(int type, sf::Vector2f position);
 	void Draw();
 	int getType();
+	void Useitem(int type);
 	sf::RectangleShape getBody() { return this->body; }
 	Collider GetCollider() { return Collider(body); }
 private:

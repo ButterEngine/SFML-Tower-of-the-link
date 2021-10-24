@@ -5,10 +5,10 @@ Aoetower::Aoetower(sf::Texture* texture, sf::Vector2u imageCount, float switchTi
 {
 	row = 0;
 	body.setSize(sf::Vector2f(240.0f, 240.0f));
-	body.setPosition(2580, 4860);
+	body.setPosition(2520, 4920);
 	body.setFillColor(sf::Color::Green);
 	aoe.setSize(sf::Vector2f(720.0f, 720.0f));
-	aoe.setPosition(2340, 4620);
+	aoe.setPosition(2280, 4680);
 	aoe.setFillColor(sf::Color(11,60,253,120));
 	//body.setOrigin(body.getSize() / 2.0f);
 
