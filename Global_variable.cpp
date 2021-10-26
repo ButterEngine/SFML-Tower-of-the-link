@@ -12,5 +12,6 @@ sf::Texture HealthPotion;
 vector <Item> arrayofItem;
 vector <Aoetower> arrayofAoetower;
 int playerHP = 100;
+int statueHP = 30;
 int score;
 int wave = 0;

@@ -22,6 +22,8 @@ extern sf::Texture bullettexture1;
 extern sf::Texture aoetowerTexture;
 extern sf::Texture HealthPotion;
 extern int wave;
+extern int statueHP;
+
 extern int score;
 extern int playerHP;
 

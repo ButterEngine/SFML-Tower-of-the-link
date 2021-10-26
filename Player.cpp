@@ -5,14 +5,21 @@
 #include <math.h>
 #include "Global_variable.h"
 
-Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, sf::Font* font) :
+Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed) :
 	animation(texture, imageCount, switchTime)
 {
 	this->speed = speed;
 	row = 0;
+	//player
+
 	body.setSize(sf::Vector2f(261.0f, 234.0f));
 	body.setPosition(3840, 5000);
 	body.setOrigin(body.getSize() / 1.4f);
+	
+	TowerMenu.setSize(sf::Vector2f(1000.0f, 2800.0f));
+	TowerMenu.setPosition(6220,5480);
+	TowerMenu.setOrigin(TowerMenu.getSize() / 1.4f);
+
 	Healthbar.setSize(sf::Vector2f(playerHP / playerMaxHP * 2000.0f, 100.0f));
 	Healthbar.setPosition(2760.0f, 3660.0f);
 	Healthbar.setFillColor(sf::Color::Green);
@@ -29,6 +36,24 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 	MaxHealthbar.setPosition(2760.0f, 3660.0f);
 	MaxHealthbar.setFillColor(sf::Color::Black);
 	MaxHealthbar.setOrigin(Healthbar.getSize() / 1.4f);
+
+	//statue
+	statueHealthbar.setSize(sf::Vector2f(statueHP / statueMaxHP * 2000.0f, 100.0f));
+	statueHealthbar.setPosition(2760.0f, 3860.0f);
+	statueHealthbar.setFillColor(sf::Color::Green);
+	statueHealthbar.setOrigin(Healthbar.getSize() / 1.4f);
+
+	statueHealthbarframe.setSize(sf::Vector2f(statueHP / statueMaxHP * 2040.0f, 140.0f));
+	statueHealthbarframe.setPosition(2740.0f, 3840.0f);
+	statueHealthbarframe.setFillColor(sf::Color::White);
+	statueHealthbarframe.setOrigin(Healthbar.getSize() / 1.4f);
+	statueHealthbarframe.setOutlineColor(sf::Color::Black);
+	statueHealthbarframe.setOutlineThickness(20);
+
+	statueMaxHealthbar.setSize(sf::Vector2f(statueHP / statueMaxHP * 2000.0f, 100.0f));
+	statueMaxHealthbar.setPosition(2760.0f, 3860.0f);
+	statueMaxHealthbar.setFillColor(sf::Color::Black);
+	statueMaxHealthbar.setOrigin(Healthbar.getSize() / 1.4f);
 
 	body.setTexture(texture);
 	HP.setFont(Gamefont);
@@ -48,6 +73,25 @@ sf::Vector2i Player::Check_Player_Position()
 
 void Player::Update(float deltatime, int map[64][64])
 {
+	
+	if (statueHP >= 0.0f)
+	{
+		statueHealthbar.setSize(sf::Vector2f(statueHP / statueMaxHP * 2000.0f, 100.0f));
+	}
+	if (statueHP > 15.0f)
+	{
+		statueHealthbar.setFillColor(sf::Color::Green);
+	}
+	if (statueHP <= 15.0f)
+	{
+		statueHealthbar.setFillColor(sf::Color::Yellow);
+	}
+	if (statueHP <= 9.0f)
+	{
+		statueHealthbar.setFillColor(sf::Color::Red);
+	}
+
+
 	if (playerHP >= 0.0f)
 	{
 		Healthbar.setSize(sf::Vector2f(playerHP / playerMaxHP * 2000.0f, 100.0f));
@@ -124,6 +168,12 @@ void Player::Update(float deltatime, int map[64][64])
 		Healthbar.move(movement);
 		Healthbarframe.move(movement);
 		MaxHealthbar.move(movement);
+
+		statueHealthbar.move(movement);
+		statueHealthbarframe.move(movement);
+		statueMaxHealthbar.move(movement);
+
+		TowerMenu.move(movement);
 	}
 }
 
@@ -133,6 +183,10 @@ void Player::Draw(sf::RenderWindow& window)
 	window.draw(Healthbarframe);
 	window.draw(MaxHealthbar);
 	window.draw(Healthbar);
+
+	window.draw(statueHealthbarframe);
+	window.draw(statueMaxHealthbar);
+	window.draw(statueHealthbar);
 }
 
 
@@ -143,5 +197,10 @@ bool Player::Die()
 		return true;
 	}
 	return false;
+}
+
+void Player::Draw_TowerMenu()
+{
+	window.draw(TowerMenu);
 }
 

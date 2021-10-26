@@ -20,7 +20,7 @@ public:
 		this->canMove = canMove;
 	}
 	int getDamage() { return damage; }
-	void Hit();
+	void Hit(int damage);
 	bool Die();
 	sf::Vector2i Check_Enemy_Position();
 	sf::Vector2f GetPostion() { return body.getPosition(); }

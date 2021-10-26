@@ -96,9 +96,9 @@ void Enemy::Draw(sf::RenderWindow& window)
 	window.draw(HealthBar);
 }
 
-void Enemy::Hit()
+void Enemy::Hit(int damage)
 {
-	Health -= 10.0f;
+	Health -= damage;
 }
 
 bool Enemy::Die()
