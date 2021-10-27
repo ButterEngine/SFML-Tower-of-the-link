@@ -48,12 +48,3 @@ void Aoetower::Update()
 	}
 	cooldown_attack -= cooldown.restart().asSeconds();
 }
-
-int Aoetower::Attack()
-{
-	if (cooldown_attack <= 0)
-	{
-		cooldown_attack = 1;
-		return damage;
-	}
-}

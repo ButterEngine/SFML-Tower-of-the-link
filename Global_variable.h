@@ -7,6 +7,7 @@
 #include"Bullet.h"
 #include"Aoetower.h"
 #include"Item.h"
+#include"HealingTower.h"
 
 using namespace std;
 
@@ -14,6 +15,7 @@ extern vector <Enemy> arrayofEnemy;
 extern vector <Bullet> arrayofBullet;
 extern vector <Platform> arrayofplatform;
 extern vector <Aoetower> arrayofAoetower;
+extern vector <HealingTower> arrayofHealingtower;
 extern vector <Item> arrayofItem;
 extern sf::RenderWindow window;
 extern sf::Texture playerTexture;

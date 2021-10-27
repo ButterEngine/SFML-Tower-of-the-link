@@ -150,6 +150,7 @@
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Global_variable.cpp" />
+    <ClCompile Include="HealingTower.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Animation.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Global_variable.h" />
+    <ClInclude Include="HealingTower.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="MapHandler.h" />
     <ClInclude Include="Platform.h" />

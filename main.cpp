@@ -5,7 +5,7 @@
 #include"Global_variable.h"
 #include"Enemy.h"
 #include"Aoetower.h"
-#include"Aoetower.h"
+#include"HealingTower.h"
 #include"Item.h"
 
 int main()
@@ -126,9 +126,6 @@ int main()
 	sf::Clock clock;
 	float spawnCooldownMax = 30.0f;
 	float spawnCooldown = spawnCooldownMax;
-	bool canHitted;
-	float hitCooldownMax = 30.0f;
-	float hitCooldown = hitCooldownMax;
 	bool canSpawn = false;
 	bool col = false;
 	bool TowerMenu = false;
@@ -224,20 +221,6 @@ int main()
 		Map_01.MapDraw(arrayofplatform);
 		player.Draw(window);
 		/////////////enemy1.Draw(window);
-
-		if (hitCooldown < hitCooldownMax)
-		{
-			hitCooldown += 0.15;
-		}
-		if (hitCooldown >= hitCooldownMax)
-		{
-			hitCooldown = 0.0f;
-			canHitted = true;
-		}
-		else
-		{
-			canHitted = false;
-		}
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
 			Mouse_x = mousePosWindow.x / 120;
@@ -292,7 +275,7 @@ int main()
 			}
 			if (TowerMenu && canbuild)
 			{
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1800)
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1800 && sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().y <= 500)
 				{
 					Aoetower Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
 					arrayofAoetower.push_back(Tower_test);
@@ -301,14 +284,16 @@ int main()
 					map_test[Mouse_y_temp][Mouse_x_temp+1] = 8;
 					map_test[Mouse_y_temp][Mouse_x_temp] = 8;
 					canbuild = false;
-					for (int i = 0; i < 64; i++)
-					{
-						for (int j = 0; j < 64; j++)
-						{
-							std::cout << map_test[i][j];
-						}
-						std::cout << "\n";
-					}
+				}
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1800 && sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().y > 500)
+				{
+					HealingTower Healing_Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
+					arrayofHealingtower.push_back(Healing_Tower_test);
+					map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
+					map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
+					map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
+					map_test[Mouse_y_temp][Mouse_x_temp] = 8;
+					canbuild = false;
 				}
 			}
 			if (map_test[Mouse_y][Mouse_x] == 8)
@@ -328,6 +313,11 @@ int main()
 		{
 			arrayofAoetower[i].Update();
 			arrayofAoetower[i].Draw(window);
+		}
+		for (int i = 0; i < arrayofHealingtower.size(); i++)
+		{
+			arrayofHealingtower[i].Update();
+			arrayofHealingtower[i].Draw(window);
 		}
 		for (int i = 0; i < arrayofEnemy.size(); i++)
 		{
@@ -397,6 +387,16 @@ int main()
 				}
 			}
 		}
+
+		for (int i = 0; i < arrayofHealingtower.size(); i++)
+		{
+			if (arrayofHealingtower[i].GetCollider().CheckCollision(player.GetCollider()))
+			{
+				arrayofHealingtower[i].Healing();
+			}
+		}
+
+
 		for (int i = 0; i < arrayofEnemy.size(); i++)
 		{
 			if (arrayofEnemy[i].getBody().getPosition().y <= 2640)
