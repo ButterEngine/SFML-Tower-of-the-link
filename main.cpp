@@ -109,7 +109,7 @@ int main()
 	}
 
 	Gamefont.loadFromFile("assets/font/GameFont.otf");
-	playerTexture.loadFromFile("assets/texture/player_right.png");
+	//playerTexture.loadFromFile("assets/texture/player_right.png");
 	Player player(&playerTexture, sf::Vector2u(3, 4), 0.2f, 450.0f);
 	MapHandler Map_01;
 	sf::Texture map;
@@ -130,17 +130,22 @@ int main()
 	bool col = false;
 	bool TowerMenu = false;
 	bool canbuild = false;
+	bool Buffed = false;
+	bool aoeCooldown = false;
 	int Mouse_x;
 	int Mouse_y;
 	int Mouse_x_temp;
 	int Mouse_y_temp;
 	int playerDamage = 10;
+	int aoeDamage = 0;
 	sf::Vector2f preTower;
 	wave = 1;
 	int Enemy_Count = 0;
 	int itemType = 0;
 	sf::Clock cooldown;
+	float click_interval = 0.0f;
 	float cooldown_click = 0.0f;
+	float cooldown_aoe = 0.0f;
 	srand(time(NULL));
 	int enemydamage = 5;
 
@@ -154,6 +159,7 @@ int main()
 			}
 		}
 		cooldown_click -= cooldown.restart().asSeconds();
+		cooldown_aoe -= cooldown.restart().asSeconds();
 		//Aim
 		sf::Vector2f mousePosWindow;
 		mousePosWindow = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -275,7 +281,7 @@ int main()
 			}
 			if (TowerMenu && canbuild)
 			{
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1800 && sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().y <= 500)
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1800 && sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().y <= 300)
 				{
 					Aoetower Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
 					arrayofAoetower.push_back(Tower_test);
@@ -285,10 +291,20 @@ int main()
 					map_test[Mouse_y_temp][Mouse_x_temp] = 8;
 					canbuild = false;
 				}
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1800 && sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().y > 500)
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1800 && sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().y > 300 && sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().y <= 600)
 				{
 					HealingTower Healing_Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
 					arrayofHealingtower.push_back(Healing_Tower_test);
+					map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
+					map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
+					map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
+					map_test[Mouse_y_temp][Mouse_x_temp] = 8;
+					canbuild = false;
+				}
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1800 && sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().y > 600)
+				{
+					Bufftower Buff_tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
+					arrayofBufftower.push_back(Buff_tower_test);
 					map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
 					map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
 					map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
@@ -300,9 +316,9 @@ int main()
 			{
 
 			}
-			else if(cooldown_click <= 0)
+			else if(cooldown_click <= click_interval)
 			{
-				cooldown_click = 0.5f;
+				cooldown_click = 1.0f;
 				Bullet arrow1(&bullettexture1, sf::Vector2f(30.0f, 30.0f), sf::Vector2f(player.getBody().getPosition().x, player.getBody().getPosition().y), rotation);
 				arrow1.setvelo(aimDirNorm * 15.0f);
 				arrow1.getBody().setRotation(rotation);
@@ -318,6 +334,10 @@ int main()
 		{
 			arrayofHealingtower[i].Update();
 			arrayofHealingtower[i].Draw(window);
+		}
+		for (int i = 0; i < arrayofBufftower.size(); i++)
+		{
+			arrayofBufftower[i].Draw(window);
 		}
 		for (int i = 0; i < arrayofEnemy.size(); i++)
 		{
@@ -375,16 +395,22 @@ int main()
 		}
 		for (int i = 0; i < arrayofAoetower.size(); i++)
 		{
+			aoeDamage = 0;
 			for (int j = 0; j < arrayofEnemy.size(); j++)
 			{
 				if (arrayofAoetower[i].GetCollider().CheckCollision(arrayofEnemy[j].GetCollider()))
 				{
-					arrayofEnemy[j].Hit(arrayofAoetower[i].getDamage());
+					aoeDamage = arrayofAoetower[i].getDamage();
+					arrayofEnemy[j].Hit(aoeDamage);
 				}
 				if (arrayofEnemy[j].Die())
 				{
 					arrayofEnemy.erase(arrayofEnemy.begin() + j);
 				}
+			}
+			if (aoeDamage != 0)
+			{
+				arrayofAoetower[i].Cooldown();
 			}
 		}
 
@@ -393,6 +419,28 @@ int main()
 			if (arrayofHealingtower[i].GetCollider().CheckCollision(player.GetCollider()))
 			{
 				arrayofHealingtower[i].Healing();
+			}
+		}
+
+		for (int i = 0; i < arrayofBufftower.size(); i++)
+		{
+			int count_buff = 0;
+			if (arrayofBufftower[i].GetCollider().CheckCollision(player.GetCollider()))
+			{
+				count_buff++;
+				Buffed = true;
+			}
+			else if (count_buff == 0)
+			{
+				Buffed = false;
+			}
+			if (Buffed)
+			{
+				click_interval = arrayofBufftower[i].Buff();
+			}
+			else
+			{
+				click_interval = 0.0f;
 			}
 		}
 

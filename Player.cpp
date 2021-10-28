@@ -57,7 +57,6 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 
 	body.setTexture(texture);
 	HP.setFont(Gamefont);
-
 }
 
 sf::Vector2i Player::Check_Player_Position()

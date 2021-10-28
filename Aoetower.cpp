@@ -30,7 +30,6 @@ int Aoetower::getDamage()
 	if (cooldown_attack <= 0)
 	{
 		aoe.setFillColor(sf::Color(255, 60, 11, 120));
-		cooldown_attack = 2;
 		damage = level * damage;
 		return damage;
 	}
@@ -47,4 +46,9 @@ void Aoetower::Update()
 		aoe.setFillColor(sf::Color(11, 60, 253, 120));
 	}
 	cooldown_attack -= cooldown.restart().asSeconds();
+}
+
+void Aoetower::Cooldown()
+{
+	cooldown_attack = 2;
 }
