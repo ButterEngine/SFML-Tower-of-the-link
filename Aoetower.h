@@ -21,6 +21,7 @@ private:
 	sf::RectangleShape body;
 	sf::RectangleShape aoe;
 	float cooldown_attack;
+	float cooldown_attack_temp;
 	sf::Clock cooldown;
 	Animation animation;
 	unsigned int row;

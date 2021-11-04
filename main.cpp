@@ -116,6 +116,7 @@ int main()
 	sf::View view(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(5376, 3024));
 	map.loadFromFile("assets/texture/map/Map_7.png");
 	sf::RectangleShape background(sf::Vector2f(7680.0f, 7680.0f));
+	sf::RectangleShape mousehitBox(sf::Vector2f(10.0f, 10.0f));
 	background.setPosition(sf::Vector2f(0.0f, 0.0f));
 	background.setTexture(&map);
 	//Aoetower Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f);
@@ -129,6 +130,7 @@ int main()
 	bool canSpawn = false;
 	bool col = false;
 	bool TowerMenu = false;
+	bool UpgradeTowerMenu = false;
 	bool canbuild = false;
 	bool Buffed = false;
 	bool aoeCooldown = false;
@@ -194,30 +196,45 @@ int main()
 		{
 			if (wave == 1)
 			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 50.0f, enemydamage * wave);
+				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 40.0f * wave, enemydamage * wave);
 				arrayofEnemy.push_back(enemy1);
 				Enemy_Count++;
 			}
 			if (wave == 2)
 			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 70.0f, enemydamage* wave);
+				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 40.0f * wave, enemydamage* wave);
 				arrayofEnemy.push_back(enemy1);
 				Enemy_Count++;
 			}
 			if (wave == 3)
 			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 100.0f, enemydamage* wave);
+				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 40.0f * wave, enemydamage* wave);
+				arrayofEnemy.push_back(enemy1);
+				Enemy_Count++;
+			}
+			if (wave >= 4)
+			{
+				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 40.0f * wave, enemydamage * wave);
 				arrayofEnemy.push_back(enemy1);
 				Enemy_Count++;
 			}
 		}
-		if (Enemy_Count == 30)
+		if (Enemy_Count == 20)
 		{
 			wave = 2;
 		}
-		if (Enemy_Count == 70)
+		if (Enemy_Count == 40)
 		{
 			wave = 3;
+		}
+		if (Enemy_Count >= 60 && Enemy_Count % 20 == 0)
+		{
+			wave = (Enemy_Count/20) + 1;
+			spawnCooldownMax -= 0.5;
+			if (spawnCooldownMax < 10)
+			{
+				spawnCooldownMax = 10;
+			}
 		}
 
 		//////////////enemy1.Update(deltaTime, map_test);
@@ -227,6 +244,7 @@ int main()
 		Map_01.MapDraw(arrayofplatform);
 		player.Draw(window);
 		/////////////enemy1.Draw(window);
+		mousehitBox.setPosition(mousePosWindow.x, mousePosWindow.y);
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
 			Mouse_x = mousePosWindow.x / 120;
@@ -278,6 +296,7 @@ int main()
 					Mouse_y_temp = 41;
 				}
 				TowerMenu = true;
+				UpgradeTowerMenu = false;
 			}
 			if (TowerMenu && canbuild)
 			{
@@ -314,9 +333,33 @@ int main()
 			}
 			if (map_test[Mouse_y][Mouse_x] == 8)
 			{
+				for (int i = 0; i < arrayofAoetower.size(); i++)
+				{
+					if (arrayofAoetower[i].GetCollider().CheckCollision(mousehitBox))
+					{
+						UpgradeTowerMenu = true;
+						TowerMenu = false;
+					}
+				}
+				for (int i = 0; i < arrayofHealingtower.size(); i++)
+				{
+					if (arrayofHealingtower[i].GetCollider().CheckCollision(mousehitBox))
+					{
+						UpgradeTowerMenu = true;
+						TowerMenu = false;
+					}
+				}
+				for (int i = 0; i < arrayofBufftower.size(); i++)
+				{
+					if (arrayofBufftower[i].GetCollider().CheckCollision(mousehitBox))
+					{
+						UpgradeTowerMenu = true;
+						TowerMenu = false;
+					}
 
+				}
 			}
-			else if(cooldown_click <= click_interval)
+			if(cooldown_click <= click_interval && map_test[Mouse_y][Mouse_x] != 8 && map_test[Mouse_y][Mouse_x] != 7)
 			{
 				cooldown_click = 1.0f;
 				Bullet arrow1(&bullettexture1, sf::Vector2f(30.0f, 30.0f), sf::Vector2f(player.getBody().getPosition().x, player.getBody().getPosition().y), rotation);
@@ -492,11 +535,17 @@ int main()
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
 		{
 			TowerMenu = false;
+			UpgradeTowerMenu = false;
 		}
 		if (TowerMenu)
 		{
 			player.Draw_TowerMenu();
 		}
+		if (UpgradeTowerMenu)
+		{
+			player.Draw_UpgradeTowerMenu();
+		}
+		window.draw(mousehitBox);
 		if (player.Die())
 		{
 			//window.close();

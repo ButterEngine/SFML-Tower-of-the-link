@@ -21,6 +21,7 @@ public:
 	}
 	bool Die();
 	void Draw_TowerMenu();
+	void Draw_UpgradeTowerMenu();
 
 	sf::Vector2i Check_Player_Position();
 	sf::Vector2f GetPostion() { return body.getPosition(); }
@@ -36,6 +37,7 @@ private:
 	sf::RectangleShape statueHealthbarframe;
 	sf::RectangleShape statueMaxHealthbar;
 	sf::RectangleShape TowerMenu;
+	sf::RectangleShape UpgradeTowerMenu;
 	sf::Text HP;
 	Animation animation;
 	unsigned int row;

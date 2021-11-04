@@ -20,6 +20,11 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 	TowerMenu.setPosition(6220,5480);
 	TowerMenu.setOrigin(TowerMenu.getSize() / 1.4f);
 
+	UpgradeTowerMenu.setSize(sf::Vector2f(1000.0f, 2800.0f));
+	UpgradeTowerMenu.setPosition(6220, 5480);
+	UpgradeTowerMenu.setOrigin(TowerMenu.getSize() / 1.4f);
+	UpgradeTowerMenu.setFillColor(sf::Color::Cyan);
+
 	Healthbar.setSize(sf::Vector2f(playerHP / playerMaxHP * 2000.0f, 100.0f));
 	Healthbar.setPosition(2760.0f, 3660.0f);
 	Healthbar.setFillColor(sf::Color::Green);
@@ -201,5 +206,10 @@ bool Player::Die()
 void Player::Draw_TowerMenu()
 {
 	window.draw(TowerMenu);
+}
+
+void Player::Draw_UpgradeTowerMenu()
+{
+	window.draw(UpgradeTowerMenu);
 }
 
