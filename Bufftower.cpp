@@ -3,7 +3,7 @@
 Bufftower::Bufftower(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2f TowerPos) :
 	animation(texture, imageCount, switchTime)
 {
-	level = 3;
+	level = 1;
 	row = 0;
 	body.setSize(sf::Vector2f(240.0f, 240.0f));
 	body.setPosition(TowerPos.x, TowerPos.y);
@@ -26,5 +26,10 @@ void Bufftower::Draw(sf::RenderWindow& window)
 float Bufftower::Buff()
 {
 	return level * 0.2;
+}
+
+void Bufftower::upgrade()
+{
+	level += 1;
 }
 

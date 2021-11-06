@@ -38,6 +38,8 @@ private:
 	sf::RectangleShape statueMaxHealthbar;
 	sf::RectangleShape TowerMenu;
 	sf::RectangleShape UpgradeTowerMenu;
+	sf::RectangleShape Scoreframe;
+	sf::RectangleShape Coinframe;
 	sf::Text HP;
 	Animation animation;
 	unsigned int row;

@@ -9,6 +9,7 @@ public:
 	Bufftower(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2f TowerPos);
 	void Draw(sf::RenderWindow& window);
 	float Buff();
+	void upgrade();
 
 	sf::Vector2f GetPostion() { return body.getPosition(); }
 	Collider GetCollider() { return Collider(aoe); }

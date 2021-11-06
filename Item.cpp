@@ -30,4 +30,20 @@ void Item::Useitem(int type)
 			playerHP = 100;
 		}
 	}
+	if (type == 2)
+	{
+		statueHP += 2;
+		if (statueHP > 30)
+		{
+			statueHP = 30;
+		}
+	}
+	if (type == 3)
+	{
+
+	}
+	if (type == 4)
+	{
+
+	}
 }

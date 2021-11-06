@@ -127,6 +127,8 @@ int main()
 	sf::Clock clock;
 	float spawnCooldownMax = 30.0f;
 	float spawnCooldown = spawnCooldownMax;
+	float monsterSpeed = 400.0f;
+	float monsterHp = 40.0f;
 	bool canSpawn = false;
 	bool col = false;
 	bool TowerMenu = false;
@@ -134,6 +136,7 @@ int main()
 	bool canbuild = false;
 	bool Buffed = false;
 	bool aoeCooldown = false;
+	bool SpecialMonster = false;
 	int Mouse_x;
 	int Mouse_y;
 	int Mouse_x_temp;
@@ -143,13 +146,17 @@ int main()
 	sf::Vector2f preTower;
 	wave = 1;
 	int Enemy_Count = 0;
+	int temp_Enemy_Count = Enemy_Count;
 	int itemType = 0;
 	sf::Clock cooldown;
 	float click_interval = 0.0f;
 	float cooldown_click = 0.0f;
+	float cooldown_upgrade = 0.0f;
 	float cooldown_aoe = 0.0f;
 	srand(time(NULL));
 	int enemydamage = 5;
+	int towerType = 0;
+	int towerNumber = 0;
 
 	while (window.isOpen()) {
 		view.setCenter(player.getBody().getPosition());
@@ -161,6 +168,7 @@ int main()
 			}
 		}
 		cooldown_click -= cooldown.restart().asSeconds();
+		cooldown_upgrade -= cooldown.restart().asSeconds();
 		cooldown_aoe -= cooldown.restart().asSeconds();
 		//Aim
 		sf::Vector2f mousePosWindow;
@@ -194,46 +202,44 @@ int main()
 		}
 		if (canSpawn)
 		{
+			if ((1 + rand() % 6) == 4 && wave >= 4)
+			{
+				SpecialMonster = true;
+			}
 			if (wave == 1)
 			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 40.0f * wave, enemydamage * wave);
+				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
 				arrayofEnemy.push_back(enemy1);
 				Enemy_Count++;
 			}
 			if (wave == 2)
 			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 40.0f * wave, enemydamage* wave);
+				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage* wave, SpecialMonster);
 				arrayofEnemy.push_back(enemy1);
 				Enemy_Count++;
 			}
 			if (wave == 3)
 			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 40.0f * wave, enemydamage* wave);
+				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage* wave, SpecialMonster);
 				arrayofEnemy.push_back(enemy1);
 				Enemy_Count++;
 			}
 			if (wave >= 4)
 			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, 400.0f, 40.0f * wave, enemydamage * wave);
+				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
 				arrayofEnemy.push_back(enemy1);
 				Enemy_Count++;
 			}
+			SpecialMonster = false;
 		}
-		if (Enemy_Count == 20)
+		if (Enemy_Count % 5 == 0 && Enemy_Count != temp_Enemy_Count)
 		{
-			wave = 2;
-		}
-		if (Enemy_Count == 40)
-		{
-			wave = 3;
-		}
-		if (Enemy_Count >= 60 && Enemy_Count % 20 == 0)
-		{
-			wave = (Enemy_Count/20) + 1;
-			spawnCooldownMax -= 0.5;
-			if (spawnCooldownMax < 10)
+			temp_Enemy_Count = Enemy_Count;
+			wave += 1;
+			spawnCooldownMax -= 1.0f;
+			if (spawnCooldownMax < 15.0f)
 			{
-				spawnCooldownMax = 10;
+				spawnCooldownMax = 15.0f;
 			}
 		}
 
@@ -241,7 +247,7 @@ int main()
 		player.Update(deltaTime, map_test);
 		window.clear(sf::Color::Black);
 		window.draw(background);
-		Map_01.MapDraw(arrayofplatform);
+		//Map_01.MapDraw(arrayofplatform);
 		player.Draw(window);
 		/////////////enemy1.Draw(window);
 		mousehitBox.setPosition(mousePosWindow.x, mousePosWindow.y);
@@ -339,6 +345,8 @@ int main()
 					{
 						UpgradeTowerMenu = true;
 						TowerMenu = false;
+						towerType = 1;
+						towerNumber = i;
 					}
 				}
 				for (int i = 0; i < arrayofHealingtower.size(); i++)
@@ -347,6 +355,8 @@ int main()
 					{
 						UpgradeTowerMenu = true;
 						TowerMenu = false;
+						towerType = 2;
+						towerNumber = i;
 					}
 				}
 				for (int i = 0; i < arrayofBufftower.size(); i++)
@@ -355,8 +365,30 @@ int main()
 					{
 						UpgradeTowerMenu = true;
 						TowerMenu = false;
+						towerType = 3;
+						towerNumber = i;
 					}
 
+				}
+			}
+			if (UpgradeTowerMenu)
+			{
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1800 && cooldown_click <= 0.0f)
+				{
+					cooldown_upgrade = 0.2;
+					std::cout << "gewgow" << "\n";
+					if (towerType == 1)
+					{
+						arrayofAoetower[towerNumber].upgrade();
+					}
+					if (towerType == 2)
+					{
+						arrayofHealingtower[towerNumber].upgrade();
+					}
+					if (towerType == 3)
+					{
+						arrayofBufftower[towerNumber].upgrade();
+					}
 				}
 			}
 			if(cooldown_click <= click_interval && map_test[Mouse_y][Mouse_x] != 8 && map_test[Mouse_y][Mouse_x] != 7)
@@ -413,8 +445,11 @@ int main()
 				{
 					arrayofBullet.erase(arrayofBullet.begin() + i);
 					arrayofEnemy[j].Hit(playerDamage);
+					std::cout << arrayofEnemy[i].getHealth() <<"\n";
 					if (arrayofEnemy[j].Die())
 					{
+						Score += wave * 100;
+						Coin += wave * 10;
 						if ((1 + rand() % 6) == 4)
 						{
 							//itemType = (1 + rand() % 4);
@@ -448,7 +483,10 @@ int main()
 				}
 				if (arrayofEnemy[j].Die())
 				{
+					Score += wave * 100;
+					Coin += wave * 5;
 					arrayofEnemy.erase(arrayofEnemy.begin() + j);
+					j--;
 				}
 			}
 			if (aoeDamage != 0)
@@ -509,7 +547,6 @@ int main()
 				}
 				enemy_stuck = true;
 				arrayofEnemy[i].Attack(arrayofEnemy[i].getDamage());
-				std::cout << statueHP << "\n";
 			}
 			else
 			{

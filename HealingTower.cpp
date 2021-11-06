@@ -5,7 +5,7 @@ HealingTower::HealingTower(sf::Texture* texture, sf::Vector2u imageCount, float 
 	animation(texture, imageCount, switchTime)
 {
 	cooldown_healing = 0.0f;
-	heal = 1;
+	heal = 3;
 	level = 1;
 	row = 0;
 	body.setSize(sf::Vector2f(240.0f, 240.0f));
@@ -36,14 +36,24 @@ void HealingTower::Update()
 
 void HealingTower::Healing()
 {
+	int temp_heal;
 	if (cooldown_healing <= 0)
 	{
 		aoe.setFillColor(sf::Color(47, 229, 47, 120));
 		cooldown_healing = 1;
-		heal = level * heal;
+		temp_heal = level * heal;
 		if (playerHP < 100)
 		{
-			playerHP += heal;
+			playerHP += temp_heal;
+		}
+		if (playerHP >= 100)
+		{
+			playerHP = 100;
 		}
 	}
+}
+
+void HealingTower::upgrade()
+{
+	level += 1;
 }

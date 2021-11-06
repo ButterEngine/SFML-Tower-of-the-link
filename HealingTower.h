@@ -10,6 +10,7 @@ public:
 	void Draw(sf::RenderWindow& window);
 	void Update();
 	void Healing();
+	void upgrade();
 
 	sf::Vector2f GetPostion() { return body.getPosition(); }
 	Collider GetCollider() { return Collider(aoe); }

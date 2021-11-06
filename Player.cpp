@@ -16,14 +16,24 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 	body.setPosition(3840, 5000);
 	body.setOrigin(body.getSize() / 1.4f);
 	
-	TowerMenu.setSize(sf::Vector2f(1000.0f, 2800.0f));
-	TowerMenu.setPosition(6220,5480);
+	TowerMenu.setSize(sf::Vector2f(1000.0f, 2400.0f));
+	TowerMenu.setPosition(6220,5600);
 	TowerMenu.setOrigin(TowerMenu.getSize() / 1.4f);
 
-	UpgradeTowerMenu.setSize(sf::Vector2f(1000.0f, 2800.0f));
-	UpgradeTowerMenu.setPosition(6220, 5480);
+	UpgradeTowerMenu.setSize(sf::Vector2f(1000.0f, 2400.0f));
+	UpgradeTowerMenu.setPosition(6220, 5600);
 	UpgradeTowerMenu.setOrigin(TowerMenu.getSize() / 1.4f);
 	UpgradeTowerMenu.setFillColor(sf::Color::Cyan);
+
+	Coinframe.setSize(sf::Vector2f(1000.0f, 200.0f));
+	Coinframe.setPosition(6220, 5400);
+	Coinframe.setOrigin(TowerMenu.getSize() / 1.4f);
+	Coinframe.setFillColor(sf::Color::Magenta);
+
+	Scoreframe.setSize(sf::Vector2f(1000.0f, 200.0f));
+	Scoreframe.setPosition(6220, 5200);
+	Scoreframe.setOrigin(TowerMenu.getSize() / 1.4f);
+	Scoreframe.setFillColor(sf::Color::Blue);
 
 	Healthbar.setSize(sf::Vector2f(playerHP / playerMaxHP * 2000.0f, 100.0f));
 	Healthbar.setPosition(2760.0f, 3660.0f);
@@ -100,15 +110,15 @@ void Player::Update(float deltatime, int map[64][64])
 	{
 		Healthbar.setSize(sf::Vector2f(playerHP / playerMaxHP * 2000.0f, 100.0f));
 	}
-	if (playerHP > 50.0f)
+	if (playerHP > 70.0f)
 	{
 		Healthbar.setFillColor(sf::Color::Green);
 	}
-	if (playerHP <= 50.0f)
+	if (playerHP <= 70.0f)
 	{
 		Healthbar.setFillColor(sf::Color::Yellow);
 	}
-	if (playerHP <= 30.0f)
+	if (playerHP <= 40.0f)
 	{
 		Healthbar.setFillColor(sf::Color::Red);
 	}
@@ -118,7 +128,6 @@ void Player::Update(float deltatime, int map[64][64])
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		{
-			//playerTexture.loadFromFile("assets/texture/player_left.png");
 			if (map[Check_Player_Position().y][Check_Player_Position().x - 1] != 1)
 			{
 				movement.x -= speed * deltatime;
@@ -126,7 +135,6 @@ void Player::Update(float deltatime, int map[64][64])
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
-			//playerTexture.loadFromFile("assets/texture/player_right.png");
 			if (map[Check_Player_Position().y][Check_Player_Position().x + 1] != 1)
 			{
 				movement.x += speed * deltatime;
@@ -178,6 +186,10 @@ void Player::Update(float deltatime, int map[64][64])
 		statueMaxHealthbar.move(movement);
 
 		TowerMenu.move(movement);
+		UpgradeTowerMenu.move(movement);
+
+		Coinframe.move(movement);
+		Scoreframe.move(movement);
 	}
 }
 
@@ -191,6 +203,9 @@ void Player::Draw(sf::RenderWindow& window)
 	window.draw(statueHealthbarframe);
 	window.draw(statueMaxHealthbar);
 	window.draw(statueHealthbar);
+
+	window.draw(Coinframe);
+	window.draw(Scoreframe);
 }
 
 

@@ -16,6 +16,7 @@ public:
 	Collider GetCollider() { return Collider(aoe); }
 	sf::RectangleShape getBody() { return this->body; }
 	sf::RectangleShape getAoe() { return this->aoe; }
+	void upgrade();
 
 private:
 	sf::RectangleShape body;
