@@ -40,7 +40,7 @@ void Item::Useitem(int type)
 	}
 	if (type == 3)
 	{
-
+		Coin += wave * 50;
 	}
 	if (type == 4)
 	{

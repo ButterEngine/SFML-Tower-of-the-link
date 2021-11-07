@@ -37,7 +37,9 @@ private:
 	sf::RectangleShape statueHealthbarframe;
 	sf::RectangleShape statueMaxHealthbar;
 	sf::RectangleShape TowerMenu;
-	sf::RectangleShape UpgradeTowerMenu;
+	sf::RectangleShape AttackUpgradeTowerMenu;
+	sf::RectangleShape HealingUpgradeTowerMenu;
+	sf::RectangleShape BuffUpgradeTowerMenu;
 	sf::RectangleShape Scoreframe;
 	sf::RectangleShape Coinframe;
 	sf::Text HP;

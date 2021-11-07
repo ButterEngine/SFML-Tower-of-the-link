@@ -20,20 +20,25 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 	TowerMenu.setPosition(6220,5600);
 	TowerMenu.setOrigin(TowerMenu.getSize() / 1.4f);
 
-	UpgradeTowerMenu.setSize(sf::Vector2f(1000.0f, 2400.0f));
-	UpgradeTowerMenu.setPosition(6220, 5600);
-	UpgradeTowerMenu.setOrigin(TowerMenu.getSize() / 1.4f);
-	UpgradeTowerMenu.setFillColor(sf::Color::Cyan);
+	AttackUpgradeTowerMenu.setSize(sf::Vector2f(1000.0f, 2400.0f));
+	AttackUpgradeTowerMenu.setPosition(6220, 5600);
+	AttackUpgradeTowerMenu.setOrigin(TowerMenu.getSize() / 1.4f);
+
+	HealingUpgradeTowerMenu.setSize(sf::Vector2f(1000.0f, 2400.0f));
+	HealingUpgradeTowerMenu.setPosition(6220, 5600);
+	HealingUpgradeTowerMenu.setOrigin(TowerMenu.getSize() / 1.4f);
+
+	BuffUpgradeTowerMenu.setSize(sf::Vector2f(1000.0f, 2400.0f));
+	BuffUpgradeTowerMenu.setPosition(6220, 5600);
+	BuffUpgradeTowerMenu.setOrigin(TowerMenu.getSize() / 1.4f);
 
 	Coinframe.setSize(sf::Vector2f(1000.0f, 200.0f));
 	Coinframe.setPosition(6220, 5400);
 	Coinframe.setOrigin(TowerMenu.getSize() / 1.4f);
-	Coinframe.setFillColor(sf::Color::Magenta);
 
 	Scoreframe.setSize(sf::Vector2f(1000.0f, 200.0f));
 	Scoreframe.setPosition(6220, 5200);
 	Scoreframe.setOrigin(TowerMenu.getSize() / 1.4f);
-	Scoreframe.setFillColor(sf::Color::Blue);
 
 	Healthbar.setSize(sf::Vector2f(playerHP / playerMaxHP * 2000.0f, 100.0f));
 	Healthbar.setPosition(2760.0f, 3660.0f);
@@ -72,6 +77,24 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 
 	body.setTexture(texture);
 	HP.setFont(Gamefont);
+
+	CoinBar.loadFromFile("assets/Menu/coinbar.png");
+	Coinframe.setTexture(&CoinBar);
+
+	ScoreBar.loadFromFile("assets/Menu/scorebar.png");
+	Scoreframe.setTexture(&ScoreBar);
+
+	TowerBuild.loadFromFile("assets/Menu/TowerBuild.png");
+	TowerMenu.setTexture(&TowerBuild);
+
+	AttackTowerUpgrade.loadFromFile("assets/Menu/AttackTowerUpgrade.png");
+	AttackUpgradeTowerMenu.setTexture(&AttackTowerUpgrade);
+
+	HealingTowerUpgrade.loadFromFile("assets/Menu/HealingTowerUpgrade.png");
+	HealingUpgradeTowerMenu.setTexture(&HealingTowerUpgrade);
+
+	BuffTowerUpgrade.loadFromFile("assets/Menu/BuffTowerUpgrade.png");
+	BuffUpgradeTowerMenu.setTexture(&BuffTowerUpgrade);
 }
 
 sf::Vector2i Player::Check_Player_Position()
@@ -186,7 +209,9 @@ void Player::Update(float deltatime, int map[64][64])
 		statueMaxHealthbar.move(movement);
 
 		TowerMenu.move(movement);
-		UpgradeTowerMenu.move(movement);
+		AttackUpgradeTowerMenu.move(movement);
+		HealingUpgradeTowerMenu.move(movement);
+		BuffUpgradeTowerMenu.move(movement);
 
 		Coinframe.move(movement);
 		Scoreframe.move(movement);
@@ -225,6 +250,17 @@ void Player::Draw_TowerMenu()
 
 void Player::Draw_UpgradeTowerMenu()
 {
-	window.draw(UpgradeTowerMenu);
+	if (towerType == 1)
+	{
+		window.draw(AttackUpgradeTowerMenu);
+	}
+	if (towerType == 2)
+	{
+		window.draw(HealingUpgradeTowerMenu);
+	}
+	if (towerType == 3)
+	{
+		window.draw(BuffUpgradeTowerMenu);
+	}
 }
 

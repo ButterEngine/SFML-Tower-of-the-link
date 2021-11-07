@@ -25,12 +25,20 @@ extern sf::Font Gamefont;
 extern sf::Texture bullettexture1;
 extern sf::Texture aoetowerTexture;
 extern sf::Texture HealthPotion;
+extern sf::Texture CoinBar;
+extern sf::Texture ScoreBar;
+extern sf::Texture TowerBuild;
+extern sf::Texture AttackTowerUpgrade;
+extern sf::Texture HealingTowerUpgrade;
+extern sf::Texture BuffTowerUpgrade;
 extern int wave;
 extern int statueHP;
 extern int playerExp;
 extern int playerLevel;
 extern int Coin;
 extern int Score;
+extern int towerType;
+extern int towerNumber;
 
 extern int playerHP;
 

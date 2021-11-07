@@ -9,7 +9,7 @@ public:
 	Aoetower(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2f TowerPos);
 	void Draw(sf::RenderWindow& window);
 	int getDamage();
-	void Update();
+	void Update(sf::RenderWindow& window);
 	void Cooldown();
 
 	sf::Vector2f GetPostion() { return body.getPosition(); }
@@ -21,8 +21,10 @@ public:
 private:
 	sf::RectangleShape body;
 	sf::RectangleShape aoe;
+	sf::RectangleShape attackSprite[8];
 	float cooldown_attack;
 	float cooldown_attack_temp;
+	bool firstAttack = false;
 	sf::Clock cooldown;
 	Animation animation;
 	unsigned int row;
