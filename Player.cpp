@@ -4,6 +4,7 @@
 #include "MapHandler.h"
 #include <math.h>
 #include "Global_variable.h"
+#include <string>
 
 Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed) :
 	animation(texture, imageCount, switchTime)
@@ -41,42 +42,41 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 	Scoreframe.setOrigin(TowerMenu.getSize() / 1.4f);
 
 	Healthbar.setSize(sf::Vector2f(playerHP / playerMaxHP * 2000.0f, 100.0f));
-	Healthbar.setPosition(2760.0f, 3660.0f);
+	Healthbar.setPosition(2660.0f, 3760.0f);
 	Healthbar.setFillColor(sf::Color::Green);
 	Healthbar.setOrigin(Healthbar.getSize() / 1.4f);
 
 	Healthbarframe.setSize(sf::Vector2f(playerHP / playerMaxHP * 2040.0f, 140.0f));
-	Healthbarframe.setPosition(2740.0f, 3640.0f);
+	Healthbarframe.setPosition(2640.0f, 3740.0f);
 	Healthbarframe.setFillColor(sf::Color::White);
 	Healthbarframe.setOrigin(Healthbar.getSize() / 1.4f);
 	Healthbarframe.setOutlineColor(sf::Color::Black);
 	Healthbarframe.setOutlineThickness(20);
 
 	MaxHealthbar.setSize(sf::Vector2f(playerHP / playerMaxHP * 2000.0f, 100.0f));
-	MaxHealthbar.setPosition(2760.0f, 3660.0f);
+	MaxHealthbar.setPosition(2660.0f, 3760.0f);
 	MaxHealthbar.setFillColor(sf::Color::Black);
 	MaxHealthbar.setOrigin(Healthbar.getSize() / 1.4f);
 
 	//statue
 	statueHealthbar.setSize(sf::Vector2f(statueHP / statueMaxHP * 2000.0f, 100.0f));
-	statueHealthbar.setPosition(2760.0f, 3860.0f);
-	statueHealthbar.setFillColor(sf::Color::Green);
+	statueHealthbar.setPosition(2660.0f, 4060.0f);
+	statueHealthbar.setFillColor(sf::Color::Blue);
 	statueHealthbar.setOrigin(Healthbar.getSize() / 1.4f);
 
 	statueHealthbarframe.setSize(sf::Vector2f(statueHP / statueMaxHP * 2040.0f, 140.0f));
-	statueHealthbarframe.setPosition(2740.0f, 3840.0f);
+	statueHealthbarframe.setPosition(2640.0f, 4040.0f);
 	statueHealthbarframe.setFillColor(sf::Color::White);
 	statueHealthbarframe.setOrigin(Healthbar.getSize() / 1.4f);
 	statueHealthbarframe.setOutlineColor(sf::Color::Black);
 	statueHealthbarframe.setOutlineThickness(20);
 
 	statueMaxHealthbar.setSize(sf::Vector2f(statueHP / statueMaxHP * 2000.0f, 100.0f));
-	statueMaxHealthbar.setPosition(2760.0f, 3860.0f);
+	statueMaxHealthbar.setPosition(2660.0f, 4060.0f);
 	statueMaxHealthbar.setFillColor(sf::Color::Black);
 	statueMaxHealthbar.setOrigin(Healthbar.getSize() / 1.4f);
 
 	body.setTexture(texture);
-	HP.setFont(Gamefont);
 
 	CoinBar.loadFromFile("assets/Menu/coinbar.png");
 	Coinframe.setTexture(&CoinBar);
@@ -87,14 +87,81 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 	TowerBuild.loadFromFile("assets/Menu/TowerBuild.png");
 	TowerMenu.setTexture(&TowerBuild);
 
-	AttackTowerUpgrade.loadFromFile("assets/Menu/AttackTowerUpgrade.png");
+	AttackTowerUpgrade.loadFromFile("assets/Menu/AttackTowerUpgrade_Edited.png");
 	AttackUpgradeTowerMenu.setTexture(&AttackTowerUpgrade);
 
-	HealingTowerUpgrade.loadFromFile("assets/Menu/HealingTowerUpgrade.png");
+	HealingTowerUpgrade.loadFromFile("assets/Menu/HealingTowerUpgrade_Edited.png");
 	HealingUpgradeTowerMenu.setTexture(&HealingTowerUpgrade);
 
-	BuffTowerUpgrade.loadFromFile("assets/Menu/BuffTowerUpgrade.png");
+	BuffTowerUpgrade.loadFromFile("assets/Menu/BuffTowerUpgrade_Edited.png");
 	BuffUpgradeTowerMenu.setTexture(&BuffTowerUpgrade);
+
+	CoinText.setFont(Gamefont);
+	ScoreText.setFont(Gamefont);
+	AttackTowerBuildCostText.setFont(Gamefont);
+	HealingTowerBuildCostText.setFont(Gamefont);
+	BuffTowerBuildCostText.setFont(Gamefont);
+	TowerLevelText.setFont(Gamefont);
+	UpgradeCostText.setFont(Gamefont);
+	CanUpgradeText.setFont(Gamefont);
+	PlayerHPText.setFont(Gamefont);
+	StatueHpText.setFont(Gamefont);
+	WaveText.setFont(Gamefont);
+
+	PlayerHPText.setString("PLAYER HP");
+	PlayerHPText.setCharacterSize(160);
+	PlayerHPText.setPosition(1200, 3460);
+	PlayerHPText.setFillColor(sf::Color::White);
+	PlayerHPText.setOutlineColor(sf::Color::Black);
+	PlayerHPText.setOutlineThickness(10);
+
+	StatueHpText.setString("STATUE HP");
+	StatueHpText.setCharacterSize(160);
+	StatueHpText.setPosition(1200, 3760);
+	StatueHpText.setFillColor(sf::Color::White);
+	StatueHpText.setOutlineColor(sf::Color::Black);
+	StatueHpText.setOutlineThickness(10);
+
+	string Scorestring = to_string(Score);
+	ScoreText.setString(Scorestring);
+	ScoreText.setCharacterSize(160);
+	ScoreText.setPosition(5950.0f, 3460.0f);
+	ScoreText.setFillColor(sf::Color::Cyan);
+
+	string Coinstring = to_string(Coin);
+	CoinText.setString(Coinstring);
+	CoinText.setCharacterSize(160);
+	CoinText.setPosition(5950.0f, 3660.0f);
+	CoinText.setFillColor(sf::Color::Yellow);
+
+	string AttackBuildString = to_string(AttackBuildCost);
+	AttackTowerBuildCostText.setString(AttackBuildString);
+	AttackTowerBuildCostText.setCharacterSize(120);
+	AttackTowerBuildCostText.setPosition(6220.0f, 4665.0f);
+
+	string HealingBuildString = to_string(HealingBuildCost);
+	HealingTowerBuildCostText.setString(HealingBuildString);
+	HealingTowerBuildCostText.setCharacterSize(120);
+	HealingTowerBuildCostText.setPosition(6220.0f, 5115.0f);
+
+	string BuffBuildString = to_string(BuffBuildCost);
+	BuffTowerBuildCostText.setString(BuffBuildString);
+	BuffTowerBuildCostText.setCharacterSize(120);
+	BuffTowerBuildCostText.setPosition(6220.0f, 5605.0f);
+
+	string TowerLevelstring = to_string(CurrentTowerLevel);
+	TowerLevelText.setString(TowerLevelstring);
+	TowerLevelText.setCharacterSize(160);
+	TowerLevelText.setPosition(5900.0f, 5400.0f);
+	TowerLevelText.setFillColor(sf::Color::Green);
+
+	string UpgradeCostString = to_string(CurrentUpgradeCost);
+	UpgradeCostText.setString(UpgradeCostString);
+	UpgradeCostText.setCharacterSize(160);
+	UpgradeCostText.setPosition(5900.0f, 5630.0f);
+
+	CanUpgradeText.setCharacterSize(256);
+	CanUpgradeText.setPosition(5560.0f, 5860.0f);
 }
 
 sf::Vector2i Player::Check_Player_Position()
@@ -110,14 +177,96 @@ sf::Vector2i Player::Check_Player_Position()
 
 void Player::Update(float deltatime, int map[64][64])
 {
-	
+	AttackBuildCost = 100 * (arrayofAoetower.size() + 1);
+	HealingBuildCost = 75 * (arrayofHealingtower.size() + 1);
+	BuffBuildCost = 200 * (arrayofBufftower.size() + 1);
+
+	if (AttackBuildCost > Coin)
+	{
+		AttackTowerBuildCostText.setFillColor(sf::Color::Red);
+	}
+	else
+	{
+		AttackTowerBuildCostText.setFillColor(sf::Color::Green);
+	}
+
+	string AttackBuildString = to_string(AttackBuildCost);
+	AttackTowerBuildCostText.setString(AttackBuildString);
+
+	if (HealingBuildCost > Coin)
+	{
+		HealingTowerBuildCostText.setFillColor(sf::Color::Red);
+	}
+	else
+	{
+		HealingTowerBuildCostText.setFillColor(sf::Color::Green);
+	}
+
+	string HealingBuildString = to_string(HealingBuildCost);
+	HealingTowerBuildCostText.setString(HealingBuildString);
+
+	if (BuffBuildCost > Coin)
+	{
+		BuffTowerBuildCostText.setFillColor(sf::Color::Red);
+	}
+	else
+	{
+		BuffTowerBuildCostText.setFillColor(sf::Color::Green);
+	}
+
+	string BuffBuildString = to_string(BuffBuildCost);
+	BuffTowerBuildCostText.setString(BuffBuildString);
+
+	string TowerLevelstring = to_string(CurrentTowerLevel);
+	TowerLevelText.setString(TowerLevelstring);
+
+	if (CurrentUpgradeCost > Coin)
+	{
+		UpgradeCostText.setFillColor(sf::Color::Red);
+	}
+	else
+	{
+		UpgradeCostText.setFillColor(sf::Color::Green);
+	}
+
+	string UpgradeCostString = to_string(CurrentUpgradeCost);
+	UpgradeCostText.setString(UpgradeCostString);
+
+	if (CurrentUpgradeCost > Coin)
+	{
+		CanUpgradeText.setString("NOT ENOUGH");
+		CanUpgradeText.setFillColor(sf::Color::Red);
+	}
+	else
+	{
+		CanUpgradeText.setString("   UPGRADE");
+		CanUpgradeText.setFillColor(sf::Color::Green);
+	}
+	if (CurrentTowerLevel == 5)
+	{
+		CanUpgradeText.setString("     MAX");
+		CanUpgradeText.setFillColor(sf::Color::Magenta);
+		UpgradeCostText.setString("MAX");
+		UpgradeCostText.setFillColor(sf::Color::Magenta);
+		TowerLevelText.setFillColor(sf::Color::Magenta);
+	}
+	else
+	{
+		TowerLevelText.setFillColor(sf::Color::Green);
+	}
+
+	string Scorestring = to_string(Score);
+	ScoreText.setString(Scorestring);
+	string Coinstring = to_string(Coin);
+	CoinText.setString(Coinstring);
+
 	if (statueHP >= 0.0f)
 	{
 		statueHealthbar.setSize(sf::Vector2f(statueHP / statueMaxHP * 2000.0f, 100.0f));
 	}
 	if (statueHP > 15.0f)
 	{
-		statueHealthbar.setFillColor(sf::Color::Green);
+		statueHealthbar.setFillColor(sf::Color::Blue);
 	}
 	if (statueHP <= 15.0f)
 	{
@@ -215,6 +364,20 @@ void Player::Update(float deltatime, int map[64][64])
 
 		Coinframe.move(movement);
 		Scoreframe.move(movement);
+
+		ScoreText.move(movement);
+		CoinText.move(movement);
+
+		AttackTowerBuildCostText.move(movement);
+		HealingTowerBuildCostText.move(movement);
+		BuffTowerBuildCostText.move(movement);
+
+		TowerLevelText.move(movement);
+		UpgradeCostText.move(movement);
+		CanUpgradeText.move(movement);
+
+		PlayerHPText.move(movement);
+		StatueHpText.move(movement);
 	}
 }
 
@@ -231,6 +394,12 @@ void Player::Draw(sf::RenderWindow& window)
 
 	window.draw(Coinframe);
 	window.draw(Scoreframe);
+
+	window.draw(ScoreText);
+	window.draw(CoinText);
+
+	window.draw(PlayerHPText);
+	window.draw(StatueHpText);
 }
 
 
@@ -246,6 +415,9 @@ bool Player::Die()
 void Player::Draw_TowerMenu()
 {
 	window.draw(TowerMenu);
+	window.draw(AttackTowerBuildCostText);
+	window.draw(HealingTowerBuildCostText);
+	window.draw(BuffTowerBuildCostText);
 }
 
 void Player::Draw_UpgradeTowerMenu()
@@ -262,5 +434,8 @@ void Player::Draw_UpgradeTowerMenu()
 	{
 		window.draw(BuffUpgradeTowerMenu);
 	}
+	window.draw(TowerLevelText);
+	window.draw(UpgradeCostText);
+	window.draw(CanUpgradeText);
 }
 

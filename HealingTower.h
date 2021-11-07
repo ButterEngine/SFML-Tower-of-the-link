@@ -11,6 +11,7 @@ public:
 	void Update();
 	void Healing();
 	void upgrade();
+	int getLevel() { return level; }
 
 	sf::Vector2f GetPostion() { return body.getPosition(); }
 	Collider GetCollider() { return Collider(aoe); }

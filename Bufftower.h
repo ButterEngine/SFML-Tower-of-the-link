@@ -10,6 +10,7 @@ public:
 	void Draw(sf::RenderWindow& window);
 	float Buff();
 	void upgrade();
+	int getLevel() { return level; }
 
 	sf::Vector2f GetPostion() { return body.getPosition(); }
 	Collider GetCollider() { return Collider(aoe); }

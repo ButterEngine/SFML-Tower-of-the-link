@@ -42,7 +42,17 @@ private:
 	sf::RectangleShape BuffUpgradeTowerMenu;
 	sf::RectangleShape Scoreframe;
 	sf::RectangleShape Coinframe;
-	sf::Text HP;
+	sf::Text CoinText;
+	sf::Text ScoreText;
+	sf::Text TowerLevelText;
+	sf::Text UpgradeCostText;
+	sf::Text AttackTowerBuildCostText;
+	sf::Text HealingTowerBuildCostText;
+	sf::Text BuffTowerBuildCostText;
+	sf::Text CanUpgradeText;
+	sf::Text PlayerHPText;
+	sf::Text StatueHpText;
+	sf::Text WaveText;
 	Animation animation;
 	unsigned int row;
 	float speed;

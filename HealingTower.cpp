@@ -56,4 +56,6 @@ void HealingTower::Healing()
 void HealingTower::upgrade()
 {
 	level += 1;
+	HealingUpgradeCost = level * 100;
+	CurrentUpgradeCost = HealingUpgradeCost;
 }

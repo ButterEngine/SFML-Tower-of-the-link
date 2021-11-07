@@ -11,6 +11,7 @@ public:
 	int getDamage();
 	void Update(sf::RenderWindow& window);
 	void Cooldown();
+	int getLevel() { return level; }
 
 	sf::Vector2f GetPostion() { return body.getPosition(); }
 	Collider GetCollider() { return Collider(aoe); }

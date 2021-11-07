@@ -1,11 +1,12 @@
 #include "Aoetower.h"
+#include "Global_variable.h"
 
 Aoetower::Aoetower(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2f TowerPos):
 	animation(texture, imageCount, switchTime)
 {
 	firstAttack = false;
 	cooldown_attack = 0.0f; 
-	damage = 20;
+	damage = 25;
 	level = 1;
 	row = 0;
 	body.setSize(sf::Vector2f(240.0f, 240.0f));
@@ -104,4 +105,6 @@ void Aoetower::Cooldown()
 void Aoetower::upgrade()
 {
 	level += 1;
+	AttackUpgradeCost = level * 150;
+	CurrentUpgradeCost = AttackUpgradeCost;
 }

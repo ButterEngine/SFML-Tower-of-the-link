@@ -1,4 +1,5 @@
 #include "Bufftower.h"
+#include "Global_variable.h"
 
 Bufftower::Bufftower(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2f TowerPos) :
 	animation(texture, imageCount, switchTime)
@@ -25,11 +26,13 @@ void Bufftower::Draw(sf::RenderWindow& window)
 
 float Bufftower::Buff()
 {
-	return level * 0.2;
+	return level * 0.1;
 }
 
 void Bufftower::upgrade()
 {
 	level += 1;
+	BuffUpgradeCost = level * 250;
+	CurrentUpgradeCost = BuffUpgradeCost;
 }
 

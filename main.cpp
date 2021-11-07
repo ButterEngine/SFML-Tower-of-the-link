@@ -122,6 +122,9 @@ int main()
 	//Aoetower Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f);
 	//arrayofAoetower.push_back(Tower_test);
 	sf::Texture enemytexture1;
+	sf::RectangleShape PreBuildTower;
+	PreBuildTower.setSize(sf::Vector2f(240.0f, 240.0f));
+	PreBuildTower.setFillColor(sf::Color(51, 255, 85, 120));
 	float deltaTime = 0.0f;
 	Map_01.MapCreate(map_test);
 	sf::Clock clock;
@@ -153,6 +156,8 @@ int main()
 	float cooldown_click = 0.0f;
 	float cooldown_upgrade = 0.0f;
 	float cooldown_aoe = 0.0f;
+	float cooldown_timer = 0.0f;
+	float WaveChangeCooldown = 10.0f;
 	srand(time(NULL));
 	int enemydamage = 5;
 
@@ -165,10 +170,15 @@ int main()
 				window.close();
 			}
 		}
-		std::cout << "X = " << sf::Mouse::getPosition().x << "     " << "Y = " << sf::Mouse::getPosition().y << "\n";
-		cooldown_click -= cooldown.restart().asSeconds();
-		cooldown_upgrade -= cooldown.restart().asSeconds();
-		cooldown_aoe -= cooldown.restart().asSeconds();
+		//std::cout << "X = " << sf::Mouse::getPosition().x << "     " << "Y = " << sf::Mouse::getPosition().y << "\n";
+		cooldown_timer = cooldown.restart().asSeconds();
+		cooldown_upgrade -= cooldown_timer;
+		cooldown_click -= cooldown_timer;
+		cooldown_aoe -= cooldown_timer;
+		if (arrayofEnemy.size() == 0)
+		{
+			WaveChangeCooldown -= cooldown_timer;
+		}
 		//Aim
 		sf::Vector2f mousePosWindow;
 		mousePosWindow = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -184,54 +194,58 @@ int main()
 		aimDir = mousePosWindow - playerCenter;
 		aimDirNorm = aimDir / (float)sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2));
 
-		if (spawnCooldown < spawnCooldownMax)
+		if (WaveChangeCooldown <= 0.0f)
 		{
-			spawnCooldown += 0.125f;
-		}
+			if (spawnCooldown < spawnCooldownMax)
+			{
+				spawnCooldown += 0.125f;
+			}
 
-		if (spawnCooldown >= spawnCooldownMax)
-		{
-			spawnCooldown = 0.0f;
-			canSpawn = true;
-		}
-		else
-		{
-			canSpawn = false;
-		}
-		if (canSpawn)
-		{
-			if ((1 + rand() % 6) == 4 && wave >= 4)
+			if (spawnCooldown >= spawnCooldownMax)
 			{
-				SpecialMonster = true;
+				spawnCooldown = 0.0f;
+				canSpawn = true;
 			}
-			if (wave == 1)
+			else
 			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
-				arrayofEnemy.push_back(enemy1);
-				Enemy_Count++;
+				canSpawn = false;
 			}
-			if (wave == 2)
+			if (canSpawn)
 			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage* wave, SpecialMonster);
-				arrayofEnemy.push_back(enemy1);
-				Enemy_Count++;
+				if ((1 + rand() % 6) == 4 && wave >= 4)
+				{
+					SpecialMonster = true;
+				}
+				if (wave == 1)
+				{
+					Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
+					arrayofEnemy.push_back(enemy1);
+					Enemy_Count++;
+				}
+				if (wave == 2)
+				{
+					Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
+					arrayofEnemy.push_back(enemy1);
+					Enemy_Count++;
+				}
+				if (wave == 3)
+				{
+					Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
+					arrayofEnemy.push_back(enemy1);
+					Enemy_Count++;
+				}
+				if (wave >= 4)
+				{
+					Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
+					arrayofEnemy.push_back(enemy1);
+					Enemy_Count++;
+				}
+				SpecialMonster = false;
 			}
-			if (wave == 3)
-			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage* wave, SpecialMonster);
-				arrayofEnemy.push_back(enemy1);
-				Enemy_Count++;
-			}
-			if (wave >= 4)
-			{
-				Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
-				arrayofEnemy.push_back(enemy1);
-				Enemy_Count++;
-			}
-			SpecialMonster = false;
 		}
 		if (Enemy_Count % 15 == 0 && Enemy_Count != temp_Enemy_Count)
 		{
+			WaveChangeCooldown = 10.0f;
 			temp_Enemy_Count = Enemy_Count;
 			wave += 1;
 			spawnCooldownMax -= 1.0f;
@@ -246,6 +260,10 @@ int main()
 		window.clear(sf::Color::Black);
 		window.draw(background);
 		//Map_01.MapDraw(arrayofplatform);
+		if (TowerMenu)
+		{
+			window.draw(PreBuildTower);
+		}
 		player.Draw(window);
 		/////////////enemy1.Draw(window);
 		mousehitBox.setPosition(mousePosWindow.x, mousePosWindow.y);
@@ -298,47 +316,64 @@ int main()
 					Mouse_x_temp = 44;
 					Mouse_y_temp = 41;
 				}
+				PreBuildTower.setPosition(preTower.x, preTower.y);
 				TowerMenu = true;
 				UpgradeTowerMenu = false;
 			}
 			if (TowerMenu && canbuild)
 			{
+				AttackBuildCost = 100 * (arrayofAoetower.size() + 1);
+				HealingBuildCost = 75 * (arrayofHealingtower.size() + 1);
+				BuffBuildCost = 200 * (arrayofBufftower.size() + 1);
+
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1881 && sf::Mouse::getPosition().y >= 187 && sf::Mouse::getPosition().y <= 200)
 				{
 					TowerMenu = false;
 				}
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 378 && sf::Mouse::getPosition().y <= 548)
 				{
-					Aoetower Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
-					arrayofAoetower.push_back(Tower_test);
-					map_test[Mouse_y_temp+1][Mouse_x_temp] = 8;
-					map_test[Mouse_y_temp+1][Mouse_x_temp+1] = 8;
-					map_test[Mouse_y_temp][Mouse_x_temp+1] = 8;
-					map_test[Mouse_y_temp][Mouse_x_temp] = 8;
-					canbuild = false;
-					TowerMenu = false;
+					if (Coin >= AttackBuildCost)
+					{
+						Coin -= AttackBuildCost;
+						Aoetower Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
+						arrayofAoetower.push_back(Tower_test);
+						map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
+						map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
+						map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
+						map_test[Mouse_y_temp][Mouse_x_temp] = 8;
+						canbuild = false;
+						TowerMenu = false;
+					}
 				}
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 552 && sf::Mouse::getPosition().y <= 705)
 				{
-					HealingTower Healing_Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
-					arrayofHealingtower.push_back(Healing_Tower_test);
-					map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
-					map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
-					map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
-					map_test[Mouse_y_temp][Mouse_x_temp] = 8;
-					canbuild = false;
-					TowerMenu = false;
+					if (Coin >= HealingBuildCost)
+					{
+						Coin -= HealingBuildCost;
+						HealingTower Healing_Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
+						arrayofHealingtower.push_back(Healing_Tower_test);
+						map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
+						map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
+						map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
+						map_test[Mouse_y_temp][Mouse_x_temp] = 8;
+						canbuild = false;
+						TowerMenu = false;
+					}
 				}
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 710 && sf::Mouse::getPosition().y <= 873)
 				{
-					Bufftower Buff_tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
-					arrayofBufftower.push_back(Buff_tower_test);
-					map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
-					map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
-					map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
-					map_test[Mouse_y_temp][Mouse_x_temp] = 8;
-					canbuild = false;
-					TowerMenu = false;
+					if (Coin >= BuffBuildCost)
+					{
+						Coin -= BuffBuildCost;
+						Bufftower Buff_tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
+						arrayofBufftower.push_back(Buff_tower_test);
+						map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
+						map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
+						map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
+						map_test[Mouse_y_temp][Mouse_x_temp] = 8;
+						canbuild = false;
+						TowerMenu = false;
+					}
 				}
 			}
 			if (map_test[Mouse_y][Mouse_x] == 8)
@@ -351,6 +386,9 @@ int main()
 						TowerMenu = false;
 						towerType = 1;
 						towerNumber = i;
+						CurrentTowerLevel = arrayofAoetower[i].getLevel();
+						AttackUpgradeCost = CurrentTowerLevel * 150;
+						CurrentUpgradeCost = AttackUpgradeCost;
 					}
 				}
 				for (int i = 0; i < arrayofHealingtower.size(); i++)
@@ -361,6 +399,9 @@ int main()
 						TowerMenu = false;
 						towerType = 2;
 						towerNumber = i;
+						CurrentTowerLevel = arrayofHealingtower[i].getLevel();
+						HealingUpgradeCost = CurrentTowerLevel * 100;
+						CurrentUpgradeCost = HealingUpgradeCost;
 					}
 				}
 				for (int i = 0; i < arrayofBufftower.size(); i++)
@@ -371,6 +412,9 @@ int main()
 						TowerMenu = false;
 						towerType = 3;
 						towerNumber = i;
+						CurrentTowerLevel = arrayofBufftower[i].getLevel();
+						BuffUpgradeCost = CurrentTowerLevel * 250;
+						CurrentUpgradeCost = BuffUpgradeCost;
 					}
 
 				}
@@ -381,30 +425,46 @@ int main()
 				{
 					UpgradeTowerMenu = false;
 				}
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 887 && sf::Mouse::getPosition().y <= 1208 && cooldown_click <= 0.0f)
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 887 && sf::Mouse::getPosition().y <= 1208 && cooldown_upgrade <= 0.0f)
 				{
-					cooldown_upgrade = 0.2;
-					if (towerType == 1)
+					if (arrayofAoetower[towerNumber].getLevel() < 5)
 					{
-						arrayofAoetower[towerNumber].upgrade();
-					}
-					if (towerType == 2)
-					{
-						arrayofHealingtower[towerNumber].upgrade();
-					}
-					if (towerType == 3)
-					{
-						arrayofBufftower[towerNumber].upgrade();
+						cooldown_upgrade = 0.3f;
+						if (towerType == 1 && Coin >= AttackUpgradeCost)
+						{
+							Coin -= AttackUpgradeCost;
+							arrayofAoetower[towerNumber].upgrade();
+							CurrentTowerLevel = arrayofAoetower[towerNumber].getLevel();
+							AttackUpgradeCost = CurrentTowerLevel * 150;
+
+						}
+						if (towerType == 2 && Coin >= HealingUpgradeCost)
+						{
+							Coin -= HealingUpgradeCost;
+							arrayofHealingtower[towerNumber].upgrade();
+							CurrentTowerLevel = arrayofHealingtower[towerNumber].getLevel();
+							HealingUpgradeCost = CurrentTowerLevel * 150;
+						}
+						if (towerType == 3 && Coin >= BuffUpgradeCost)
+						{
+							Coin -= BuffUpgradeCost;
+							arrayofBufftower[towerNumber].upgrade();
+							CurrentTowerLevel = arrayofBufftower[towerNumber].getLevel();
+							BuffUpgradeCost = CurrentTowerLevel * 150;
+						}
 					}
 				}
 			}
 			if(cooldown_click <= click_interval && map_test[Mouse_y][Mouse_x] != 8 && map_test[Mouse_y][Mouse_x] != 7)
 			{
-				cooldown_click = 1.0f;
-				Bullet arrow1(&bullettexture1, sf::Vector2f(30.0f, 30.0f), sf::Vector2f(player.getBody().getPosition().x, player.getBody().getPosition().y), rotation);
-				arrow1.setvelo(aimDirNorm * 15.0f);
-				arrow1.getBody().setRotation(rotation);
-				arrayofBullet.push_back(arrow1);
+				if (!(sf::Mouse::getPosition().x >= 1567 && ( TowerMenu || UpgradeTowerMenu)))
+				{
+					cooldown_click = 1.0f;
+					Bullet arrow1(&bullettexture1, sf::Vector2f(30.0f, 30.0f), sf::Vector2f(player.getBody().getPosition().x, player.getBody().getPosition().y), rotation);
+					arrow1.setvelo(aimDirNorm * 15.0f);
+					arrow1.getBody().setRotation(rotation);
+					arrayofBullet.push_back(arrow1);
+				}
 			}
 		}
 		for (int i = 0; i < arrayofAoetower.size(); i++)
@@ -489,7 +549,7 @@ int main()
 				}
 				if (arrayofEnemy[j].Die())
 				{
-					Score += wave * 20;
+					Score += wave * 15;
 					Coin += wave * 5;
 					arrayofEnemy.erase(arrayofEnemy.begin() + j);
 					j--;
@@ -596,6 +656,10 @@ int main()
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		{
 			window.close();
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+		{
+			Coin += 10;
 		}
 		if (statueHP == 0)
 		{
