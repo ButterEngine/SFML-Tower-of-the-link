@@ -8,7 +8,7 @@ class HealingTower
 public:
 	HealingTower(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2f TowerPos);
 	void Draw(sf::RenderWindow& window);
-	void Update();
+	void Update(float deltatime);
 	void Healing();
 	void upgrade();
 	int getLevel() { return level; }

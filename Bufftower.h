@@ -8,6 +8,7 @@ class Bufftower
 public:
 	Bufftower(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2f TowerPos);
 	void Draw(sf::RenderWindow& window);
+	void Update(float deltatime);
 	float Buff();
 	void upgrade();
 	int getLevel() { return level; }

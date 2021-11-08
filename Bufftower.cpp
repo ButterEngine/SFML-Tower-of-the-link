@@ -6,9 +6,8 @@ Bufftower::Bufftower(sf::Texture* texture, sf::Vector2u imageCount, float switch
 {
 	level = 1;
 	row = 0;
-	body.setSize(sf::Vector2f(240.0f, 240.0f));
-	body.setPosition(TowerPos.x, TowerPos.y);
-	body.setFillColor(sf::Color::Green);
+	body.setSize(sf::Vector2f(500.0f, 1000.0f));
+	body.setPosition(TowerPos.x - 120, TowerPos.y - 740);
 	aoe.setSize(sf::Vector2f(720.0f, 720.0f));
 	aoe.setPosition(TowerPos.x - 240.0f, TowerPos.y - 240.0f);
 	aoe.setFillColor(sf::Color(255, 154, 0, 120));
@@ -24,9 +23,15 @@ void Bufftower::Draw(sf::RenderWindow& window)
 	window.draw(body);
 }
 
+void Bufftower::Update(float deltatime)
+{
+	animation.Update(row, deltatime);
+	body.setTextureRect(animation.uvRect);
+}
+
 float Bufftower::Buff()
 {
-	return level * 0.1;
+	return level * 0.125;
 }
 
 void Bufftower::upgrade()

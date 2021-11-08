@@ -6,7 +6,18 @@ Item::Item(int type, sf::Vector2f position)
 	this->type = type;
 	body.setPosition(position.x, position.y);
 	body.setSize(sf::Vector2f(60.0f, 60.0f));
-	body.setFillColor(sf::Color::Cyan);
+	if (type == 1)
+	{
+		body.setFillColor(sf::Color::Green);
+	}
+	if (type == 2)
+	{
+		body.setFillColor(sf::Color::Blue);
+	}
+	if (type == 3)
+	{
+		body.setFillColor(sf::Color::Yellow);
+	}
 	body.setTexture(&HealthPotion);
 }
 

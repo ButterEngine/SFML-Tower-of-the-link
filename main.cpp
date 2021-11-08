@@ -109,12 +109,26 @@ int main()
 	}
 
 	Gamefont.loadFromFile("assets/font/GameFont.otf");
-	//playerTexture.loadFromFile("assets/texture/player_right.png");
-	Player player(&playerTexture, sf::Vector2u(3, 4), 0.2f, 450.0f);
+	BuffTowerTexture.loadFromFile("assets/texture/Tower/Obelisk_effects.png");
+	HealingTowerTexture.loadFromFile("assets/texture/Tower/skull_tower_green_free_idle-Sheet.png");
+	//playerTexture.loadFromFile("assets/texture/Tower/Obelisk_effects.png");
+	Player player(&playerTexture, sf::Vector2u(1, 1), 0.2f, 450.0f);
 	MapHandler Map_01;
 	sf::Texture map;
 	sf::View view(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(5376, 3024));
 	map.loadFromFile("assets/texture/map/Map_7.png");
+	sf::RectangleShape Menu(sf::Vector2f(1920.0f, 1080.0f));
+	sf::Texture MenuTexture;
+	MenuTexture.loadFromFile("assets/Menu/Menu.png");
+	Menu.setTexture(&MenuTexture);
+	Menu.setPosition(0.0f, 0.0f);
+
+	sf::RectangleShape EnterName(sf::Vector2f(1920.0f, 1080.0f));
+	sf::Texture EnterNameTexture;
+	EnterNameTexture.loadFromFile("assets/Menu/EnterYourName.png");
+	EnterName.setTexture(&EnterNameTexture);
+	EnterName.setPosition(0.0f, 0.0f);
+
 	sf::RectangleShape background(sf::Vector2f(7680.0f, 7680.0f));
 	sf::RectangleShape mousehitBox(sf::Vector2f(10.0f, 10.0f));
 	background.setPosition(sf::Vector2f(0.0f, 0.0f));
@@ -140,12 +154,19 @@ int main()
 	bool Buffed = false;
 	bool aoeCooldown = false;
 	bool SpecialMonster = false;
+	bool isGameStart = false;
+	bool MainMenu = true;
+	bool EnterNameMenu = false;
+	bool HowToPlayMenu = false;
 	int Mouse_x;
+	string PlayerName;
 	int Mouse_y;
 	int Mouse_x_temp;
 	int Mouse_y_temp;
 	int playerDamage = 10;
 	int aoeDamage = 0;
+	bool firstwave = true;
+	bool KeyHold = false;
 	sf::Vector2f preTower;
 	wave = 1;
 	int Enemy_Count = 0;
@@ -161,7 +182,40 @@ int main()
 	srand(time(NULL));
 	int enemydamage = 5;
 
+	sf::Text StartText;
+	StartText.setString("START");
+	StartText.setFont(Gamefont);
+	StartText.setCharacterSize(80);
+	StartText.setPosition(900.0f, 480.0f);
+	StartText.setFillColor(sf::Color::White);
+	StartText.setOutlineColor(sf::Color::Black);
+	StartText.setOutlineThickness(10);
+
+	sf::Text HowToPlayText;
+	HowToPlayText.setString("HOW TO PLAY");
+	HowToPlayText.setFont(Gamefont);
+	HowToPlayText.setCharacterSize(80);
+	HowToPlayText.setPosition(820.0f, 615.0f);
+	HowToPlayText.setFillColor(sf::Color::White);
+	HowToPlayText.setOutlineColor(sf::Color::Black);
+	HowToPlayText.setOutlineThickness(10);
+
+	sf::Text ExitText;
+	ExitText.setString("Exit");
+	ExitText.setFont(Gamefont);
+	ExitText.setCharacterSize(80);
+	ExitText.setPosition(920.0f, 750.0f);
+	ExitText.setFillColor(sf::Color::White);
+	ExitText.setOutlineColor(sf::Color::Black);
+	ExitText.setOutlineThickness(10);
+
 	while (window.isOpen()) {
+		//std::cout << WaveChangeCooldown << "\n";
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+		{
+			isGameStart = true;
+			WaveChangeCooldown = 10.0f;
+		}
 		view.setCenter(player.getBody().getPosition());
 		deltaTime = clock.restart().asSeconds();
 		sf::Event event;
@@ -170,283 +224,354 @@ int main()
 				window.close();
 			}
 		}
-		//std::cout << "X = " << sf::Mouse::getPosition().x << "     " << "Y = " << sf::Mouse::getPosition().y << "\n";
-		cooldown_timer = cooldown.restart().asSeconds();
-		cooldown_upgrade -= cooldown_timer;
-		cooldown_click -= cooldown_timer;
-		cooldown_aoe -= cooldown_timer;
-		if (arrayofEnemy.size() == 0)
+		if (!isGameStart)
 		{
-			WaveChangeCooldown -= cooldown_timer;
+			//std::cout << sf::Mouse::getPosition().x << " / " << sf::Mouse::getPosition().y << "\n";
+			if (MainMenu)
+			{
+				window.draw(Menu);
+				window.draw(StartText);
+				window.draw(HowToPlayText);
+				window.draw(ExitText);
+
+				StartText.setFillColor(sf::Color::White);
+				HowToPlayText.setFillColor(sf::Color::White);
+				ExitText.setFillColor(sf::Color::White);
+
+				if (sf::Mouse::getPosition().x >= 590 && sf::Mouse::getPosition().x <= 1327 && sf::Mouse::getPosition().y >= 526 && sf::Mouse::getPosition().y <= 620)
+				{
+					StartText.setFillColor(sf::Color::Green);
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						EnterNameMenu = true;
+						MainMenu = false;
+						HowToPlayMenu = false;
+					}
+				}
+				if (sf::Mouse::getPosition().x >= 590 && sf::Mouse::getPosition().x <= 1327 && sf::Mouse::getPosition().y >= 661 && sf::Mouse::getPosition().y <= 760)
+				{
+					HowToPlayText.setFillColor(sf::Color::Green);
+				}
+				if (sf::Mouse::getPosition().x >= 590 && sf::Mouse::getPosition().x <= 1327 && sf::Mouse::getPosition().y >= 792 && sf::Mouse::getPosition().y <= 890)
+				{
+					ExitText.setFillColor(sf::Color::Green);
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						window.close();
+					}
+				}
+			}
+			if (EnterNameMenu)
+			{
+				window.draw(EnterName);
+				if (event.type == sf::Event::TextEntered) 
+				{
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace) && PlayerName.size() != 0 && !KeyHold)
+					{
+						PlayerName.pop_back();
+						KeyHold = true;
+					}
+					else if (event.text.unicode < 128 && !KeyHold)
+					{
+						PlayerName.push_back((char)event.text.unicode);
+						KeyHold = true;
+					}
+				}
+				else
+				{
+					KeyHold = false;
+				}
+			}
+			window.display();
 		}
-		//Aim
-		sf::Vector2f mousePosWindow;
-		mousePosWindow = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-		float rotation;
-		sf::RectangleShape Weapon;
-		float dx = mousePosWindow.x - player.getBody().getPosition().x;
-		float dy = mousePosWindow.y - player.getBody().getPosition().y;
-		rotation = (float)(atan2(dy, dx) * 180.0 / 3.141);
-		Weapon.setRotation(rotation + 180);
-		sf::Vector2f aimDir;
-		sf::Vector2f aimDirNorm;
-		sf::Vector2f playerCenter = player.GetPostion();
-		aimDir = mousePosWindow - playerCenter;
-		aimDirNorm = aimDir / (float)sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2));
-
-		if (WaveChangeCooldown <= 0.0f)
+		if (isGameStart)
 		{
-			if (spawnCooldown < spawnCooldownMax)
+			//std::cout << "X = " << sf::Mouse::getPosition().x << "     " << "Y = " << sf::Mouse::getPosition().y << "\n";
+			cooldown_timer = cooldown.restart().asSeconds();
+			if (firstwave)
 			{
-				spawnCooldown += 0.125f;
+				firstwave = false;
+				cooldown_timer = 0;
+			}
+			cooldown_upgrade -= cooldown_timer;
+			cooldown_click -= cooldown_timer;
+			cooldown_aoe -= cooldown_timer;
+			if (arrayofEnemy.size() == 0)
+			{
+				WaveChangeCooldown -= cooldown_timer;
+			}
+			//Aim
+			sf::Vector2f mousePosWindow;
+			mousePosWindow = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+			float rotation;
+			sf::RectangleShape Weapon;
+			float dx = mousePosWindow.x - player.getBody().getPosition().x;
+			float dy = mousePosWindow.y - player.getBody().getPosition().y;
+			rotation = (float)(atan2(dy, dx) * 180.0 / 3.141);
+			Weapon.setRotation(rotation + 180);
+			sf::Vector2f aimDir;
+			sf::Vector2f aimDirNorm;
+			sf::Vector2f playerCenter = player.GetPostion();
+			aimDir = mousePosWindow - playerCenter;
+			aimDirNorm = aimDir / (float)sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2));
+
+			if (WaveChangeCooldown <= 0.0f)
+			{
+				if (spawnCooldown < spawnCooldownMax)
+				{
+					spawnCooldown += 0.125f;
+				}
+
+				if (spawnCooldown >= spawnCooldownMax)
+				{
+					spawnCooldown = 0.0f;
+					canSpawn = true;
+				}
+				else
+				{
+					canSpawn = false;
+				}
+				if (canSpawn)
+				{
+					if ((1 + rand() % 6) == 4 && wave >= 4)
+					{
+						SpecialMonster = true;
+					}
+					if (wave == 1)
+					{
+						Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
+						arrayofEnemy.push_back(enemy1);
+						Enemy_Count++;
+					}
+					if (wave == 2)
+					{
+						Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
+						arrayofEnemy.push_back(enemy1);
+						Enemy_Count++;
+					}
+					if (wave == 3)
+					{
+						Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
+						arrayofEnemy.push_back(enemy1);
+						Enemy_Count++;
+					}
+					if (wave >= 4)
+					{
+						Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
+						arrayofEnemy.push_back(enemy1);
+						Enemy_Count++;
+					}
+					SpecialMonster = false;
+				}
+			}
+			if (Enemy_Count % 15 == 0 && Enemy_Count != temp_Enemy_Count)
+			{
+				WaveChangeCooldown = 10.0f;
+				temp_Enemy_Count = Enemy_Count;
+				wave += 1;
+				spawnCooldownMax -= 1.0f;
+				if (spawnCooldownMax < 15.0f)
+				{
+					spawnCooldownMax = 15.0f;
+				}
 			}
 
-			if (spawnCooldown >= spawnCooldownMax)
+			//////////////enemy1.Update(deltaTime, map_test);
+			player.Update(deltaTime, map_test);
+			for (int i = 0; i < arrayofBufftower.size(); i++)
 			{
-				spawnCooldown = 0.0f;
-				canSpawn = true;
+				arrayofBufftower[i].Update(deltaTime);
 			}
-			else
+			window.clear(sf::Color::Black);
+			window.draw(background);
+			//std::cout << towerNumber << "\n";
+			//Map_01.MapDraw(arrayofplatform);
+			if (TowerMenu)
 			{
-				canSpawn = false;
+				window.draw(PreBuildTower);
 			}
-			if (canSpawn)
+			player.Draw(window);
+			/////////////enemy1.Draw(window);
+			mousehitBox.setPosition(mousePosWindow.x, mousePosWindow.y);
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
-				if ((1 + rand() % 6) == 4 && wave >= 4)
+				Mouse_x = mousePosWindow.x / 120;
+				Mouse_y = mousePosWindow.y / 120;
+				if (map_test[Mouse_y][Mouse_x] == 7)
 				{
-					SpecialMonster = true;
-				}
-				if (wave == 1)
-				{
-					Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
-					arrayofEnemy.push_back(enemy1);
-					Enemy_Count++;
-				}
-				if (wave == 2)
-				{
-					Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
-					arrayofEnemy.push_back(enemy1);
-					Enemy_Count++;
-				}
-				if (wave == 3)
-				{
-					Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
-					arrayofEnemy.push_back(enemy1);
-					Enemy_Count++;
-				}
-				if (wave >= 4)
-				{
-					Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
-					arrayofEnemy.push_back(enemy1);
-					Enemy_Count++;
-				}
-				SpecialMonster = false;
-			}
-		}
-		if (Enemy_Count % 15 == 0 && Enemy_Count != temp_Enemy_Count)
-		{
-			WaveChangeCooldown = 10.0f;
-			temp_Enemy_Count = Enemy_Count;
-			wave += 1;
-			spawnCooldownMax -= 1.0f;
-			if (spawnCooldownMax < 15.0f)
-			{
-				spawnCooldownMax = 15.0f;
-			}
-		}
-
-		//////////////enemy1.Update(deltaTime, map_test);
-		player.Update(deltaTime, map_test);
-		window.clear(sf::Color::Black);
-		window.draw(background);
-		//Map_01.MapDraw(arrayofplatform);
-		if (TowerMenu)
-		{
-			window.draw(PreBuildTower);
-		}
-		player.Draw(window);
-		/////////////enemy1.Draw(window);
-		mousehitBox.setPosition(mousePosWindow.x, mousePosWindow.y);
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		{
-			Mouse_x = mousePosWindow.x / 120;
-			Mouse_y = mousePosWindow.y / 120;
-			if (map_test[Mouse_y][Mouse_x] == 7)
-			{
-				canbuild = true;
-				if ((Mouse_x == 18 || Mouse_x == 19) && (Mouse_y == 26 || Mouse_y == 27))
-				{
-					preTower.x = 18.0f * 120.0f;
-					preTower.y = 26.0f * 120.0f;
-					Mouse_x_temp = 18;
-					Mouse_y_temp = 26;
-				}
-				if ((Mouse_x == 41 || Mouse_x == 42) && (Mouse_y == 26 || Mouse_y == 27))
-				{
-					preTower.x = 41.0f * 120.0f;
-					preTower.y = 26.0f * 120.0f;
-					Mouse_x_temp = 41;
-					Mouse_y_temp = 26;
-				}
-				if ((Mouse_x == 37 || Mouse_x == 38) && (Mouse_y == 31 || Mouse_y == 32))
-				{
-					preTower.x = 37.0f * 120.0f;
-					preTower.y = 31.0f * 120.0f;
-					Mouse_x_temp = 37;
-					Mouse_y_temp = 31;
-				}
-				if ((Mouse_x == 25 || Mouse_x == 26) && (Mouse_y == 36 || Mouse_y == 37))
-				{
-					preTower.x = 25.0f * 120.0f;
-					preTower.y = 36.0f * 120.0f;
-					Mouse_x_temp = 25;
-					Mouse_y_temp = 36;
-				}
-				if ((Mouse_x == 21 || Mouse_x == 22) && (Mouse_y == 41 || Mouse_y == 42))
-				{
-					preTower.x = 21.0f * 120.0f;
-					preTower.y = 41.0f * 120.0f;
-					Mouse_x_temp = 21;
-					Mouse_y_temp = 41;
-				}
-				if ((Mouse_x == 44 || Mouse_x == 45) && (Mouse_y == 41 || Mouse_y == 42))
-				{
-					preTower.x = 44.0f * 120.0f;
-					preTower.y = 41.0f * 120.0f;
-					Mouse_x_temp = 44;
-					Mouse_y_temp = 41;
-				}
-				PreBuildTower.setPosition(preTower.x, preTower.y);
-				TowerMenu = true;
-				UpgradeTowerMenu = false;
-			}
-			if (TowerMenu && canbuild)
-			{
-				AttackBuildCost = 100 * (arrayofAoetower.size() + 1);
-				HealingBuildCost = 75 * (arrayofHealingtower.size() + 1);
-				BuffBuildCost = 200 * (arrayofBufftower.size() + 1);
-
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1881 && sf::Mouse::getPosition().y >= 187 && sf::Mouse::getPosition().y <= 200)
-				{
-					TowerMenu = false;
-				}
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 378 && sf::Mouse::getPosition().y <= 548)
-				{
-					if (Coin >= AttackBuildCost)
+					canbuild = true;
+					if ((Mouse_x == 18 || Mouse_x == 19) && (Mouse_y == 26 || Mouse_y == 27))
 					{
-						Coin -= AttackBuildCost;
-						Aoetower Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
-						arrayofAoetower.push_back(Tower_test);
-						map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
-						map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
-						map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
-						map_test[Mouse_y_temp][Mouse_x_temp] = 8;
-						canbuild = false;
-						TowerMenu = false;
+						preTower.x = 18.0f * 120.0f;
+						preTower.y = 26.0f * 120.0f;
+						Mouse_x_temp = 18;
+						Mouse_y_temp = 26;
 					}
-				}
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 552 && sf::Mouse::getPosition().y <= 705)
-				{
-					if (Coin >= HealingBuildCost)
+					if ((Mouse_x == 41 || Mouse_x == 42) && (Mouse_y == 26 || Mouse_y == 27))
 					{
-						Coin -= HealingBuildCost;
-						HealingTower Healing_Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
-						arrayofHealingtower.push_back(Healing_Tower_test);
-						map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
-						map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
-						map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
-						map_test[Mouse_y_temp][Mouse_x_temp] = 8;
-						canbuild = false;
-						TowerMenu = false;
+						preTower.x = 41.0f * 120.0f;
+						preTower.y = 26.0f * 120.0f;
+						Mouse_x_temp = 41;
+						Mouse_y_temp = 26;
 					}
-				}
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 710 && sf::Mouse::getPosition().y <= 873)
-				{
-					if (Coin >= BuffBuildCost)
+					if ((Mouse_x == 37 || Mouse_x == 38) && (Mouse_y == 31 || Mouse_y == 32))
 					{
-						Coin -= BuffBuildCost;
-						Bufftower Buff_tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
-						arrayofBufftower.push_back(Buff_tower_test);
-						map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
-						map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
-						map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
-						map_test[Mouse_y_temp][Mouse_x_temp] = 8;
-						canbuild = false;
-						TowerMenu = false;
+						preTower.x = 37.0f * 120.0f;
+						preTower.y = 31.0f * 120.0f;
+						Mouse_x_temp = 37;
+						Mouse_y_temp = 31;
 					}
-				}
-			}
-			if (map_test[Mouse_y][Mouse_x] == 8)
-			{
-				for (int i = 0; i < arrayofAoetower.size(); i++)
-				{
-					if (arrayofAoetower[i].GetCollider().CheckCollision(mousehitBox))
+					if ((Mouse_x == 25 || Mouse_x == 26) && (Mouse_y == 36 || Mouse_y == 37))
 					{
-						UpgradeTowerMenu = true;
-						TowerMenu = false;
-						towerType = 1;
-						towerNumber = i;
-						CurrentTowerLevel = arrayofAoetower[i].getLevel();
-						AttackUpgradeCost = CurrentTowerLevel * 150;
-						CurrentUpgradeCost = AttackUpgradeCost;
+						preTower.x = 25.0f * 120.0f;
+						preTower.y = 36.0f * 120.0f;
+						Mouse_x_temp = 25;
+						Mouse_y_temp = 36;
 					}
-				}
-				for (int i = 0; i < arrayofHealingtower.size(); i++)
-				{
-					if (arrayofHealingtower[i].GetCollider().CheckCollision(mousehitBox))
+					if ((Mouse_x == 21 || Mouse_x == 22) && (Mouse_y == 41 || Mouse_y == 42))
 					{
-						UpgradeTowerMenu = true;
-						TowerMenu = false;
-						towerType = 2;
-						towerNumber = i;
-						CurrentTowerLevel = arrayofHealingtower[i].getLevel();
-						HealingUpgradeCost = CurrentTowerLevel * 100;
-						CurrentUpgradeCost = HealingUpgradeCost;
+						preTower.x = 21.0f * 120.0f;
+						preTower.y = 41.0f * 120.0f;
+						Mouse_x_temp = 21;
+						Mouse_y_temp = 41;
 					}
-				}
-				for (int i = 0; i < arrayofBufftower.size(); i++)
-				{
-					if (arrayofBufftower[i].GetCollider().CheckCollision(mousehitBox))
+					if ((Mouse_x == 44 || Mouse_x == 45) && (Mouse_y == 41 || Mouse_y == 42))
 					{
-						UpgradeTowerMenu = true;
-						TowerMenu = false;
-						towerType = 3;
-						towerNumber = i;
-						CurrentTowerLevel = arrayofBufftower[i].getLevel();
-						BuffUpgradeCost = CurrentTowerLevel * 250;
-						CurrentUpgradeCost = BuffUpgradeCost;
+						preTower.x = 44.0f * 120.0f;
+						preTower.y = 41.0f * 120.0f;
+						Mouse_x_temp = 44;
+						Mouse_y_temp = 41;
 					}
-
-				}
-			}
-			if (UpgradeTowerMenu)
-			{
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1881 && sf::Mouse::getPosition().y >= 187 && sf::Mouse::getPosition().y <= 200)
-				{
+					PreBuildTower.setPosition(preTower.x, preTower.y);
+					TowerMenu = true;
 					UpgradeTowerMenu = false;
 				}
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 887 && sf::Mouse::getPosition().y <= 1208 && cooldown_upgrade <= 0.0f)
+				if (TowerMenu && canbuild)
 				{
-					if (arrayofAoetower[towerNumber].getLevel() < 5)
+					AttackBuildCost = 100 * (arrayofAoetower.size() + 1);
+					HealingBuildCost = 75 * (arrayofHealingtower.size() + 1);
+					BuffBuildCost = 200 * (arrayofBufftower.size() + 1);
+
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1881 && sf::Mouse::getPosition().y >= 187 && sf::Mouse::getPosition().y <= 200)
 					{
-						cooldown_upgrade = 0.3f;
-						if (towerType == 1 && Coin >= AttackUpgradeCost)
+						TowerMenu = false;
+					}
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 378 && sf::Mouse::getPosition().y <= 548)
+					{
+						if (Coin >= AttackBuildCost)
 						{
+							Coin -= AttackBuildCost;
+							Aoetower Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
+							arrayofAoetower.push_back(Tower_test);
+							map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
+							map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
+							map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
+							map_test[Mouse_y_temp][Mouse_x_temp] = 8;
+							canbuild = false;
+							TowerMenu = false;
+						}
+					}
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 552 && sf::Mouse::getPosition().y <= 705)
+					{
+						if (Coin >= HealingBuildCost)
+						{
+							Coin -= HealingBuildCost;
+							HealingTower Healing_Tower_test(&HealingTowerTexture, sf::Vector2u(12, 1), 0.125f, preTower);
+							arrayofHealingtower.push_back(Healing_Tower_test);
+							map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
+							map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
+							map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
+							map_test[Mouse_y_temp][Mouse_x_temp] = 8;
+							canbuild = false;
+							TowerMenu = false;
+						}
+					}
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 710 && sf::Mouse::getPosition().y <= 873)
+					{
+						if (Coin >= BuffBuildCost)
+						{
+							Coin -= BuffBuildCost;
+							Bufftower Buff_tower_test(&BuffTowerTexture, sf::Vector2u(14, 1), 0.125f, preTower);
+							arrayofBufftower.push_back(Buff_tower_test);
+							map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
+							map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
+							map_test[Mouse_y_temp][Mouse_x_temp + 1] = 8;
+							map_test[Mouse_y_temp][Mouse_x_temp] = 8;
+							canbuild = false;
+							TowerMenu = false;
+						}
+					}
+				}
+				if (map_test[Mouse_y][Mouse_x] == 8)
+				{
+					for (int i = 0; i < arrayofAoetower.size(); i++)
+					{
+						if (arrayofAoetower[i].GetCollider().CheckCollision(mousehitBox))
+						{
+							UpgradeTowerMenu = true;
+							TowerMenu = false;
+							towerType = 1;
+							towerNumber = i;
+							CurrentTowerLevel = arrayofAoetower[i].getLevel();
+							AttackUpgradeCost = CurrentTowerLevel * 150;
+							CurrentUpgradeCost = AttackUpgradeCost;
+						}
+					}
+					for (int i = 0; i < arrayofHealingtower.size(); i++)
+					{
+						if (arrayofHealingtower[i].GetCollider().CheckCollision(mousehitBox))
+						{
+							UpgradeTowerMenu = true;
+							TowerMenu = false;
+							towerType = 2;
+							towerNumber = i;
+							CurrentTowerLevel = arrayofHealingtower[i].getLevel();
+							HealingUpgradeCost = CurrentTowerLevel * 100;
+							CurrentUpgradeCost = HealingUpgradeCost;
+						}
+					}
+					for (int i = 0; i < arrayofBufftower.size(); i++)
+					{
+						if (arrayofBufftower[i].GetCollider().CheckCollision(mousehitBox))
+						{
+							UpgradeTowerMenu = true;
+							TowerMenu = false;
+							towerType = 3;
+							towerNumber = i;
+							CurrentTowerLevel = arrayofBufftower[i].getLevel();
+							BuffUpgradeCost = CurrentTowerLevel * 250;
+							CurrentUpgradeCost = BuffUpgradeCost;
+						}
+
+					}
+				}
+				if (UpgradeTowerMenu)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1881 && sf::Mouse::getPosition().y >= 187 && sf::Mouse::getPosition().y <= 200)
+					{
+						UpgradeTowerMenu = false;
+					}
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && sf::Mouse::getPosition().x >= 1567 && sf::Mouse::getPosition().y >= 887 && sf::Mouse::getPosition().y <= 1208 && cooldown_upgrade <= 0.0f)
+					{
+						if (towerType == 1 && Coin >= AttackUpgradeCost && arrayofAoetower[towerNumber].getLevel() < 5)
+						{
+							cooldown_upgrade = 0.3f;
 							Coin -= AttackUpgradeCost;
 							arrayofAoetower[towerNumber].upgrade();
 							CurrentTowerLevel = arrayofAoetower[towerNumber].getLevel();
 							AttackUpgradeCost = CurrentTowerLevel * 150;
-
 						}
-						if (towerType == 2 && Coin >= HealingUpgradeCost)
+						if (towerType == 2 && Coin >= HealingUpgradeCost && arrayofHealingtower[towerNumber].getLevel() < 5)
 						{
+							cooldown_upgrade = 0.3f;
 							Coin -= HealingUpgradeCost;
 							arrayofHealingtower[towerNumber].upgrade();
 							CurrentTowerLevel = arrayofHealingtower[towerNumber].getLevel();
 							HealingUpgradeCost = CurrentTowerLevel * 150;
 						}
-						if (towerType == 3 && Coin >= BuffUpgradeCost)
+						if (towerType == 3 && Coin >= BuffUpgradeCost && arrayofBufftower[towerNumber].getLevel() < 5)
 						{
+							cooldown_upgrade = 0.3f;
 							Coin -= BuffUpgradeCost;
 							arrayofBufftower[towerNumber].upgrade();
 							CurrentTowerLevel = arrayofBufftower[towerNumber].getLevel();
@@ -454,218 +579,216 @@ int main()
 						}
 					}
 				}
-			}
-			if(cooldown_click <= click_interval && map_test[Mouse_y][Mouse_x] != 8 && map_test[Mouse_y][Mouse_x] != 7)
-			{
-				if (!(sf::Mouse::getPosition().x >= 1567 && ( TowerMenu || UpgradeTowerMenu)))
+				if (cooldown_click <= click_interval && map_test[Mouse_y][Mouse_x] != 8 && map_test[Mouse_y][Mouse_x] != 7)
 				{
-					cooldown_click = 1.0f;
-					Bullet arrow1(&bullettexture1, sf::Vector2f(30.0f, 30.0f), sf::Vector2f(player.getBody().getPosition().x, player.getBody().getPosition().y), rotation);
-					arrow1.setvelo(aimDirNorm * 15.0f);
-					arrow1.getBody().setRotation(rotation);
-					arrayofBullet.push_back(arrow1);
-				}
-			}
-		}
-		for (int i = 0; i < arrayofAoetower.size(); i++)
-		{
-			arrayofAoetower[i].Update(window);
-			arrayofAoetower[i].Draw(window);
-		}
-		for (int i = 0; i < arrayofHealingtower.size(); i++)
-		{
-			arrayofHealingtower[i].Update();
-			arrayofHealingtower[i].Draw(window);
-		}
-		for (int i = 0; i < arrayofBufftower.size(); i++)
-		{
-			arrayofBufftower[i].Draw(window);
-		}
-		for (int i = 0; i < arrayofEnemy.size(); i++)
-		{
-			arrayofEnemy[i].Update(deltaTime, map_test);
-			window.draw(arrayofEnemy[i].getBody());
-			window.draw(arrayofEnemy[i].getHealthbar());
-		}
-
-		for (int i = 0; i < arrayofItem.size(); i++)
-		{
-			window.draw(arrayofItem[i].getBody());
-		}
-		
-		for (int i = 0; i < arrayofBullet.size(); i++)
-		{
-			col = false;
-			if (arrayofBullet[i].getBody().getPosition().x < 0 || arrayofBullet[i].getBody().getPosition().x > 7680)
-			{
-				arrayofBullet.erase(arrayofBullet.begin() + i);
-				continue;
-			}
-			if (arrayofBullet[i].getBody().getPosition().y < 0 || arrayofBullet[i].getBody().getPosition().y > 7680)
-			{
-				arrayofBullet.erase(arrayofBullet.begin() + i);
-				continue;
-			}
-			for (int j = 0; j < arrayofEnemy.size(); j++)
-			{
-				if (arrayofBullet[i].GetCollider().CheckCollision(arrayofEnemy[j].GetCollider()))
-				{
-					arrayofBullet.erase(arrayofBullet.begin() + i);
-					arrayofEnemy[j].Hit(playerDamage);
-					if (arrayofEnemy[j].Die())
+					if (!(sf::Mouse::getPosition().x >= 1567 && (TowerMenu || UpgradeTowerMenu)))
 					{
-						Score += wave * 20;
-						Coin += wave * 10;
-						if ((1 + rand() % 6) == 4)
-						{
-							//itemType = (1 + rand() % 4);
-							itemType = 1;
-							Item Item1(itemType, arrayofEnemy[j].GetPostion());
-							arrayofItem.push_back(Item1);
-						}
-						arrayofEnemy.erase(arrayofEnemy.begin() + j);
+						cooldown_click = 1.0f;
+						Bullet arrow1(&bullettexture1, sf::Vector2f(30.0f, 30.0f), sf::Vector2f(player.getBody().getPosition().x, player.getBody().getPosition().y), rotation);
+						arrow1.setvelo(aimDirNorm * 15.0f);
+						arrow1.getBody().setRotation(rotation);
+						arrayofBullet.push_back(arrow1);
 					}
-					col = true;
-					break;
 				}
 			}
-			if (col)
+			for (int i = 0; i < arrayofAoetower.size(); i++)
 			{
-				continue;
+				arrayofAoetower[i].Update(window);
+				arrayofAoetower[i].Draw(window);
 			}
-			arrayofBullet[i].moveMent(arrayofBullet[i].GetVelo());
-			arrayofBullet[i].setColor(sf::Color::Cyan);
-			window.draw(arrayofBullet[i].getBody());
-		}
-		for (int i = 0; i < arrayofAoetower.size(); i++)
-		{
-			aoeDamage = 0;
-			for (int j = 0; j < arrayofEnemy.size(); j++)
+			for (int i = 0; i < arrayofHealingtower.size(); i++)
 			{
-				if (arrayofAoetower[i].GetCollider().CheckCollision(arrayofEnemy[j].GetCollider()))
-				{
-					aoeDamage = arrayofAoetower[i].getDamage();
-					arrayofEnemy[j].Hit(aoeDamage);
-				}
-				if (arrayofEnemy[j].Die())
-				{
-					Score += wave * 15;
-					Coin += wave * 5;
-					arrayofEnemy.erase(arrayofEnemy.begin() + j);
-					j--;
-				}
+				arrayofHealingtower[i].Update(deltaTime);
+				arrayofHealingtower[i].Draw(window);
 			}
-			if (aoeDamage != 0)
+			for (int i = 0; i < arrayofBufftower.size(); i++)
 			{
-				arrayofAoetower[i].Cooldown();
+				arrayofBufftower[i].Draw(window);
 			}
-		}
-
-		for (int i = 0; i < arrayofHealingtower.size(); i++)
-		{
-			if (arrayofHealingtower[i].GetCollider().CheckCollision(player.GetCollider()))
-			{
-				arrayofHealingtower[i].Healing();
-			}
-		}
-
-		for (int i = 0; i < arrayofBufftower.size(); i++)
-		{
-			int count_buff = 0;
-			if (arrayofBufftower[i].GetCollider().CheckCollision(player.GetCollider()))
-			{
-				count_buff++;
-				Buffed = true;
-			}
-			else if (count_buff == 0)
-			{
-				Buffed = false;
-			}
-			if (Buffed)
-			{
-				click_interval = arrayofBufftower[i].Buff();
-			}
-			else
-			{
-				click_interval = 0.0f;
-			}
-		}
-
-
-		for (int i = 0; i < arrayofEnemy.size(); i++)
-		{
-			if (arrayofEnemy[i].getBody().getPosition().y <= 2640)
-			{
-				statueHP -= 1;
-				arrayofEnemy.erase(arrayofEnemy.begin() + i);
-				continue;
-			}
-		}
-		bool enemy_stuck = false;
-		for (int i = 0; i < arrayofEnemy.size(); i++)
-		{
-			if (arrayofEnemy[i].GetCollider().CheckCollision(player.GetCollider()))
-			{
-				if (!player.isblock())
-				{
-					arrayofEnemy[i].setCanmove(false);
-					player.setblocked(true);
-				}
-				enemy_stuck = true;
-				arrayofEnemy[i].Attack(arrayofEnemy[i].getDamage());
-			}
-			else
-			{
-				arrayofEnemy[i].setCanmove(true);
-			}
-		}
-		if (!enemy_stuck)
-		{
-			player.setblocked(false);
 			for (int i = 0; i < arrayofEnemy.size(); i++)
 			{
-				arrayofEnemy[i].setCanmove(true);
+				arrayofEnemy[i].Update(deltaTime, map_test);
+				window.draw(arrayofEnemy[i].getBody());
+				window.draw(arrayofEnemy[i].getHealthbar());
 			}
-		}
-		for (int i = 0; i < arrayofItem.size(); i++)
-		{
-			if (arrayofItem[i].GetCollider().CheckCollision(player.GetCollider()))
+
+			for (int i = 0; i < arrayofItem.size(); i++)
 			{
-				arrayofItem[i].Useitem(arrayofItem[i].getType());
-				arrayofItem.erase(arrayofItem.begin() + i);
+				window.draw(arrayofItem[i].getBody());
 			}
+
+			for (int i = 0; i < arrayofBullet.size(); i++)
+			{
+				col = false;
+				if (arrayofBullet[i].getBody().getPosition().x < 0 || arrayofBullet[i].getBody().getPosition().x > 7680)
+				{
+					arrayofBullet.erase(arrayofBullet.begin() + i);
+					continue;
+				}
+				if (arrayofBullet[i].getBody().getPosition().y < 0 || arrayofBullet[i].getBody().getPosition().y > 7680)
+				{
+					arrayofBullet.erase(arrayofBullet.begin() + i);
+					continue;
+				}
+				for (int j = 0; j < arrayofEnemy.size(); j++)
+				{
+					if (arrayofBullet[i].GetCollider().CheckCollision(arrayofEnemy[j].GetCollider()))
+					{
+						arrayofBullet.erase(arrayofBullet.begin() + i);
+						arrayofEnemy[j].Hit(playerDamage);
+						if (arrayofEnemy[j].Die())
+						{
+							Score += wave * 20;
+							Coin += wave * 10;
+							if ((1 + rand() % 6) == 4)
+							{
+								itemType = (1 + rand() % 3);
+								Item Item1(itemType, arrayofEnemy[j].GetPostion());
+								arrayofItem.push_back(Item1);
+							}
+							arrayofEnemy.erase(arrayofEnemy.begin() + j);
+						}
+						col = true;
+						break;
+					}
+				}
+				if (col)
+				{
+					continue;
+				}
+				arrayofBullet[i].moveMent(arrayofBullet[i].GetVelo());
+				arrayofBullet[i].setColor(sf::Color::Cyan);
+				window.draw(arrayofBullet[i].getBody());
+			}
+			for (int i = 0; i < arrayofAoetower.size(); i++)
+			{
+				aoeDamage = 0;
+				for (int j = 0; j < arrayofEnemy.size(); j++)
+				{
+					if (arrayofAoetower[i].GetCollider().CheckCollision(arrayofEnemy[j].GetCollider()))
+					{
+						aoeDamage = arrayofAoetower[i].getDamage();
+						arrayofEnemy[j].Hit(aoeDamage);
+					}
+					if (arrayofEnemy[j].Die())
+					{
+						Score += wave * 15;
+						Coin += wave * 5;
+						arrayofEnemy.erase(arrayofEnemy.begin() + j);
+						j--;
+					}
+				}
+				if (aoeDamage != 0)
+				{
+					arrayofAoetower[i].Cooldown();
+				}
+			}
+
+			for (int i = 0; i < arrayofHealingtower.size(); i++)
+			{
+				if (arrayofHealingtower[i].GetCollider().CheckCollision(player.GetCollider()))
+				{
+					arrayofHealingtower[i].Healing();
+				}
+			}
+
+			for (int i = 0; i < arrayofBufftower.size(); i++)
+			{
+				int count_buff = 0;
+				if (arrayofBufftower[i].GetCollider().CheckCollision(player.GetCollider()))
+				{
+					count_buff++;
+					Buffed = true;
+				}
+				else if (count_buff == 0)
+				{
+					Buffed = false;
+				}
+				if (Buffed)
+				{
+					click_interval = arrayofBufftower[i].Buff();
+				}
+				else
+				{
+					click_interval = 0.0f;
+				}
+			}
+
+
+			for (int i = 0; i < arrayofEnemy.size(); i++)
+			{
+				if (arrayofEnemy[i].getBody().getPosition().y <= 2640)
+				{
+					statueHP -= 1;
+					arrayofEnemy.erase(arrayofEnemy.begin() + i);
+					continue;
+				}
+			}
+			bool enemy_stuck = false;
+			for (int i = 0; i < arrayofEnemy.size(); i++)
+			{
+				if (arrayofEnemy[i].GetCollider().CheckCollision(player.GetCollider()))
+				{
+					if (!player.isblock())
+					{
+						arrayofEnemy[i].setCanmove(false);
+						player.setblocked(true);
+					}
+					enemy_stuck = true;
+					arrayofEnemy[i].Attack(arrayofEnemy[i].getDamage());
+				}
+				else
+				{
+					arrayofEnemy[i].setCanmove(true);
+				}
+			}
+			if (!enemy_stuck)
+			{
+				player.setblocked(false);
+				for (int i = 0; i < arrayofEnemy.size(); i++)
+				{
+					arrayofEnemy[i].setCanmove(true);
+				}
+			}
+			for (int i = 0; i < arrayofItem.size(); i++)
+			{
+				if (arrayofItem[i].GetCollider().CheckCollision(player.GetCollider()))
+				{
+					arrayofItem[i].Useitem(arrayofItem[i].getType());
+					arrayofItem.erase(arrayofItem.begin() + i);
+				}
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+			{
+				TowerMenu = false;
+				UpgradeTowerMenu = false;
+			}
+			if (TowerMenu)
+			{
+				player.Draw_TowerMenu();
+			}
+			if (UpgradeTowerMenu)
+			{
+				player.Draw_UpgradeTowerMenu();
+			}
+			if (player.Die())
+			{
+				//window.close();
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			{
+				window.close();
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+			{
+				Coin += 10;
+			}
+			if (statueHP == 0)
+			{
+				//window.close();
+			}
+			window.setView(view);
+			window.display();
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
-		{
-			TowerMenu = false;
-			UpgradeTowerMenu = false;
-		}
-		if (TowerMenu)
-		{
-			player.Draw_TowerMenu();
-		}
-		if (UpgradeTowerMenu)
-		{
-			player.Draw_UpgradeTowerMenu();
-		}
-		window.draw(mousehitBox);
-		if (player.Die())
-		{
-			//window.close();
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-		{
-			window.close();
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
-		{
-			Coin += 10;
-		}
-		if (statueHP == 0)
-		{
-			//window.close();
-		}
-		window.setView(view);
-		window.display();
 	}
 }

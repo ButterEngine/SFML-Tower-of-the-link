@@ -5,6 +5,8 @@
 #include <math.h>
 #include "Global_variable.h"
 #include <string>
+#include <fstream>
+#include <string>
 
 Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed) :
 	animation(texture, imageCount, switchTime)
@@ -121,6 +123,14 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 	StatueHpText.setFillColor(sf::Color::White);
 	StatueHpText.setOutlineColor(sf::Color::Black);
 	StatueHpText.setOutlineThickness(10);
+
+	string WaveString = to_string(wave);
+	WaveText.setString(WaveString);
+	WaveText.setCharacterSize(160);
+	WaveText.setPosition(4000.0f, 3460.0f);
+	WaveText.setFillColor(sf::Color::Cyan);
+	WaveText.setOutlineColor(sf::Color::Black);
+	WaveText.setOutlineThickness(10);
 
 	string Scorestring = to_string(Score);
 	ScoreText.setString(Scorestring);
@@ -260,6 +270,9 @@ void Player::Update(float deltatime, int map[64][64])
 	string Coinstring = to_string(Coin);
 	CoinText.setString(Coinstring);
 
+	string WaveString = to_string(wave);
+	WaveText.setString(WaveString);
+
 	if (statueHP >= 0.0f)
 	{
 		statueHealthbar.setSize(sf::Vector2f(statueHP / statueMaxHP * 2000.0f, 100.0f));
@@ -378,6 +391,8 @@ void Player::Update(float deltatime, int map[64][64])
 
 		PlayerHPText.move(movement);
 		StatueHpText.move(movement);
+
+		WaveText.move(movement);
 	}
 }
 
@@ -400,6 +415,8 @@ void Player::Draw(sf::RenderWindow& window)
 
 	window.draw(PlayerHPText);
 	window.draw(StatueHpText);
+
+	window.draw(WaveText);
 }
 
 
