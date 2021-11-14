@@ -6,6 +6,7 @@ Animation::Animation(sf::Texture* texture, sf::Vector2u imageCount, float switch
 {
 	this->imageCount = imageCount;
 	this->switchTime = switchTime;
+	TempswitchTime = switchTime;
 	totalTime = 0.0f;
 	currentImage.x = 0;
 
@@ -13,8 +14,16 @@ Animation::Animation(sf::Texture* texture, sf::Vector2u imageCount, float switch
 	uvRect.height = texture -> getSize().y/float(imageCount.y);
 }
 
-void Animation::Update(int row, float deltatime)
+void Animation::Update(int row, float deltatime, bool attack)
 {
+	if (attack)
+	{
+		switchTime = 0.1;
+	}
+	else
+	{
+		switchTime = TempswitchTime;
+	}
 	currentImage.y = row;
 	totalTime += deltatime;
 

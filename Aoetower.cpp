@@ -9,9 +9,8 @@ Aoetower::Aoetower(sf::Texture* texture, sf::Vector2u imageCount, float switchTi
 	damage = 25;
 	level = 1;
 	row = 0;
-	body.setSize(sf::Vector2f(240.0f, 240.0f));
-	body.setPosition(TowerPos.x , TowerPos.y );
-	body.setFillColor(sf::Color::Green);
+	body.setSize(sf::Vector2f(500.0f, 750.0f));
+	body.setPosition(TowerPos.x - 130 , TowerPos.y - 400 );
 	aoe.setSize(sf::Vector2f(720.0f, 720.0f));
 	aoe.setPosition(TowerPos.x - 240.0f, TowerPos.y  - 240.0f);
 	aoe.setFillColor(sf::Color(11,60,253,120));
@@ -67,7 +66,8 @@ int Aoetower::getDamage()
 {
 	if (cooldown_attack <= 0)
 	{
-		firstAttack = true;
+		row = 1;
+		attack = true;
 		int damage_send;
 		aoe.setFillColor(sf::Color(255, 60, 11, 120));
 		damage_send = level * damage;
@@ -79,21 +79,18 @@ int Aoetower::getDamage()
 	}
 }
 
-void Aoetower::Update(sf::RenderWindow& window)
+void Aoetower::Update(sf::RenderWindow& window, float deltaTime)
 {
-	if (cooldown_attack <= cooldown_attack_temp - 0.4f)
+	std::cout << cooldown_attack << std::endl;
+	if (cooldown_attack <= cooldown_attack_temp - 0.7f)
 	{
 		aoe.setFillColor(sf::Color(11, 60, 253, 120));
-	}
-	else if(firstAttack)
-	{
-		for (int i = 0; i < 8; i++)
-		{
-			window.draw(attackSprite[i]);
-		}
+		row = 0;
+		attack = false;
 	}
 	cooldown_attack -= cooldown.restart().asSeconds();
-
+	animation.Update(row, deltaTime, attack);
+	body.setTextureRect(animation.uvRect);
 }
 
 void Aoetower::Cooldown()

@@ -47,7 +47,6 @@ struct ScoreDataStruct {
 	int Score;
 }TempHighScoreData[6];
 
-
 bool compareTwoStudents(ScoreDataStruct a, ScoreDataStruct b)
 {
 	if (a.Score != b.Score)
@@ -206,6 +205,7 @@ int main()
 		Gamefont.loadFromFile("assets/font/GameFont.otf");
 		BuffTowerTexture.loadFromFile("assets/texture/Tower/Obelisk_effects.png");
 		HealingTowerTexture.loadFromFile("assets/texture/Tower/skull_tower_green_free_idle-Sheet.png");
+		aoetowerTexture.loadFromFile("assets/texture/Tower/AttackTowerSprite.png");
 		//playerTexture.loadFromFile("assets/texture/Tower/Obelisk_effects.png");
 		Player player(&playerTexture, sf::Vector2u(1, 1), 0.2f, 450.0f);
 		MapHandler Map_01;
@@ -223,6 +223,12 @@ int main()
 		EnterNameTexture.loadFromFile("assets/Menu/EnterYourName.png");
 		EnterName.setTexture(&EnterNameTexture);
 		EnterName.setPosition(0.0f, 0.0f);
+
+		sf::RectangleShape HighScoreMenu(sf::Vector2f(1920.0f, 1080.0f));
+		sf::Texture HighScoreTexture;
+		HighScoreTexture.loadFromFile("assets/Menu/HighScoreMenu.png");
+		HighScoreMenu.setTexture(&HighScoreTexture);
+		HighScoreMenu.setPosition(0.0f, 0.0f);
 
 		sf::RectangleShape background(sf::Vector2f(7680.0f, 7680.0f));
 		sf::RectangleShape mousehitBox(sf::Vector2f(10.0f, 10.0f));
@@ -252,6 +258,7 @@ int main()
 		bool isGameStart = false;
 		bool MainMenu = true;
 		bool EnterNameMenu = false;
+		bool isHighScoreMenu = false;
 		bool HowToPlayMenu = false;
 		int Mouse_x;
 		string PlayerName;
@@ -277,6 +284,54 @@ int main()
 		float WaveChangeCooldown = 10.0f;
 		srand(time(NULL));
 		int enemydamage = 5;
+
+		sf::Text HighScoreNameText[5];
+		sf::Text HighScoreNumberText[5];
+		for (int i = 0; i < 10; i++)
+		{
+			if (i % 2 != 0)
+			{
+				if (i == 1)
+				{
+					HighScoreNumberText[0].setString(Data[i]);
+					HighScoreNumberText[0].setFont(Gamefont);
+					HighScoreNumberText[0].setCharacterSize(120);
+					HighScoreNumberText[0].setFillColor(sf::Color::White);
+					HighScoreNumberText[0].setOutlineColor(sf::Color::Black);
+					HighScoreNumberText[0].setOutlineThickness(10);
+				}
+				else
+				{
+					HighScoreNumberText[i / 2].setString(Data[i]);
+					HighScoreNumberText[i / 2].setFont(Gamefont);
+					HighScoreNumberText[i / 2].setCharacterSize(120);
+					HighScoreNumberText[i / 2].setFillColor(sf::Color::White);
+					HighScoreNumberText[i / 2].setOutlineColor(sf::Color::Black);
+					HighScoreNumberText[i / 2].setOutlineThickness(10);
+				}
+			}
+			else
+			{
+				HighScoreNameText[i / 2].setString(Data[i]);
+				HighScoreNameText[i / 2].setFont(Gamefont);
+				HighScoreNameText[i / 2].setCharacterSize(120);
+				HighScoreNameText[i / 2].setFillColor(sf::Color::White);
+				HighScoreNameText[i / 2].setOutlineColor(sf::Color::Black);
+				HighScoreNameText[i / 2].setOutlineThickness(10);
+			}
+		}
+
+		HighScoreNumberText[0].setPosition(1200.0f, 210.0f);
+		HighScoreNumberText[1].setPosition(1200.0f, 370.0f);
+		HighScoreNumberText[2].setPosition(1200.0f, 520.0f);
+		HighScoreNumberText[3].setPosition(1200.0f, 670.0f);
+		HighScoreNumberText[4].setPosition(1200.0f, 820.0f);
+
+		HighScoreNameText[0].setPosition(300.0f, 210.0f);
+		HighScoreNameText[1].setPosition(300.0f, 370.0f);
+		HighScoreNameText[2].setPosition(300.0f, 520.0f);
+		HighScoreNameText[3].setPosition(300.0f, 670.0f);
+		HighScoreNameText[4].setPosition(300.0f, 820.0f);
 
 		sf::Text StartText;
 		StartText.setString("START");
@@ -337,6 +392,7 @@ int main()
 				//std::cout << sf::Mouse::getPosition().x << " / " << sf::Mouse::getPosition().y << "\n";
 				if (MainMenu)
 				{
+					cout << "NOT" << endl;
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 					{
 						window.close();
@@ -359,12 +415,20 @@ int main()
 						{
 							EnterNameMenu = true;
 							MainMenu = false;
+							isHighScoreMenu = false;
 							HowToPlayMenu = false;
 						}
 					}
 					if (sf::Mouse::getPosition().x >= 597 && sf::Mouse::getPosition().x <= 1351 && sf::Mouse::getPosition().y >= 624 && sf::Mouse::getPosition().y <= 722)
 					{
 						HighScoreText.setFillColor(sf::Color::Green);
+						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+						{
+							EnterNameMenu = false;
+							MainMenu = false;
+							isHighScoreMenu = true;
+							HowToPlayMenu = false;
+						}
 					}
 					if (sf::Mouse::getPosition().x >= 597 && sf::Mouse::getPosition().x <= 1351 && sf::Mouse::getPosition().y >= 761 && sf::Mouse::getPosition().y <= 858)
 					{
@@ -414,6 +478,10 @@ int main()
 					}
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
 					{
+						EnterNameMenu = false;
+						MainMenu = false;
+						isHighScoreMenu = false;
+						HowToPlayMenu = false;
 						isGameStart = true;
 						WaveChangeCooldown = 10.0f;
 					}
@@ -421,15 +489,40 @@ int main()
 					{
 						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 						{
+							EnterNameMenu = false;
+							MainMenu = false;
+							isHighScoreMenu = false;
+							HowToPlayMenu = false;
 							isGameStart = true;
 							WaveChangeCooldown = 10.0f;
 						}
 					}
 				}
+				else if (isHighScoreMenu)
+				{
+					window.draw(HighScoreMenu);
+					for (int i = 0; i < 5; i++)
+					{
+						window.draw(HighScoreNumberText[i]);
+						window.draw(HighScoreNameText[i]);
+					}
+					//std::cout << sf::Mouse::getPosition().x << " / " << sf::Mouse::getPosition().y << "\n";
+					if (sf::Mouse::getPosition().x >= 60 && sf::Mouse::getPosition().x <= 186 && sf::Mouse::getPosition().y >= 60 && sf::Mouse::getPosition().y <= 186)
+					{
+						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+						{
+							isHighScoreMenu = false;
+							EnterNameMenu = false;
+							HowToPlayMenu = false;
+							MainMenu = true;
+						}
+					}
+				}
 				window.display();
 			}
-			if (isGameStart)
+			else if (isGameStart)
 			{
+				cout << "IN" << endl;
 				//std::cout << "X = " << sf::Mouse::getPosition().x << "     " << "Y = " << sf::Mouse::getPosition().y << "\n";
 				cooldown_timer = cooldown.restart().asSeconds();
 				if (firstwave)
@@ -607,7 +700,7 @@ int main()
 							if (Coin >= AttackBuildCost)
 							{
 								Coin -= AttackBuildCost;
-								Aoetower Tower_test(&aoetowerTexture, sf::Vector2u(1, 1), 0.2f, preTower);
+								Aoetower Tower_test(&aoetowerTexture, sf::Vector2u(7, 2), 0.125f, preTower);
 								arrayofAoetower.push_back(Tower_test);
 								map_test[Mouse_y_temp + 1][Mouse_x_temp] = 8;
 								map_test[Mouse_y_temp + 1][Mouse_x_temp + 1] = 8;
@@ -740,7 +833,7 @@ int main()
 				}
 				for (int i = 0; i < arrayofAoetower.size(); i++)
 				{
-					arrayofAoetower[i].Update(window);
+					arrayofAoetower[i].Update(window, deltaTime);
 					arrayofAoetower[i].Draw(window);
 				}
 				for (int i = 0; i < arrayofHealingtower.size(); i++)
@@ -937,6 +1030,76 @@ int main()
 						}
 						HighScoreFile.close();
 					}
+
+					HighScoreFile.open("HighScore.txt", ios::in);
+					if (HighScoreFile.is_open())
+					{
+						string line;
+						while (getline(HighScoreFile, line))
+						{
+							round++;
+							Data[round - 1] = line;
+						}
+						round = 0;
+						HighScoreFile.close();
+					}
+					for (int i = 0; i < 10; i++)
+					{
+						cout << i << endl;
+						if (i % 2 != 0)
+						{
+							if (i == 1)
+							{
+								TempHighScoreData[0].Score = stoi(Data[i]);
+							}
+							else
+							{
+								TempHighScoreData[i / 2].Score = stoi(Data[i]);
+							}
+						}
+						else
+						{
+							TempHighScoreData[i / 2].Name = Data[i];
+						}
+					}
+					for (int i = 0; i < 10; i++)
+					{
+						if (i % 2 != 0)
+						{
+							if (i == 1)
+							{
+								HighScoreNumberText[0].setString(Data[i]);
+								HighScoreNumberText[0].setFont(Gamefont);
+								HighScoreNumberText[0].setCharacterSize(120);
+								HighScoreNumberText[0].setFillColor(sf::Color::White);
+								HighScoreNumberText[0].setOutlineColor(sf::Color::Black);
+								HighScoreNumberText[0].setOutlineThickness(10);
+							}
+							else
+							{
+								HighScoreNumberText[i / 2].setString(Data[i]);
+								HighScoreNumberText[i / 2].setFont(Gamefont);
+								HighScoreNumberText[i / 2].setCharacterSize(120);
+								HighScoreNumberText[i / 2].setFillColor(sf::Color::White);
+								HighScoreNumberText[i / 2].setOutlineColor(sf::Color::Black);
+								HighScoreNumberText[i / 2].setOutlineThickness(10);
+							}
+						}
+						else
+						{
+							HighScoreNameText[i / 2].setString(Data[i]);
+							HighScoreNameText[i / 2].setFont(Gamefont);
+							HighScoreNameText[i / 2].setCharacterSize(120);
+							HighScoreNameText[i / 2].setFillColor(sf::Color::White);
+							HighScoreNameText[i / 2].setOutlineColor(sf::Color::Black);
+							HighScoreNameText[i / 2].setOutlineThickness(10);
+						}
+					}
+					isGameStart = false;
+					MainMenu = true;
+					Score = 0;
+					wave = 1;
+					Coin = 0;
 					window.close();
 				}
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))

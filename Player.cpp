@@ -357,7 +357,7 @@ void Player::Update(float deltatime, int map[64][64])
 	}
 
 
-	animation.Update(row, deltatime);
+	animation.Update(row, deltatime, false);
 	body.setTextureRect(animation.uvRect);
 	if (canwalk)
 	{

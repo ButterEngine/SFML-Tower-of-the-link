@@ -5,7 +5,7 @@ class Animation
 public:
 	Animation(sf::Texture*, sf::Vector2u imageCount, float switchTime);
 
-	void Update(int row, float deltatime);
+	void Update(int row, float deltatime,bool attack);
 
 public:
 	sf::IntRect uvRect;
@@ -16,5 +16,6 @@ private:
 
 	float totalTime;
 	float switchTime;
+	float TempswitchTime;
 };
 

@@ -25,7 +25,7 @@ void Bufftower::Draw(sf::RenderWindow& window)
 
 void Bufftower::Update(float deltatime)
 {
-	animation.Update(row, deltatime);
+	animation.Update(row, deltatime, false);
 	body.setTextureRect(animation.uvRect);
 }
 

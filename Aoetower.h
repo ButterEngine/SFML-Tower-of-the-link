@@ -9,7 +9,7 @@ public:
 	Aoetower(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2f TowerPos);
 	void Draw(sf::RenderWindow& window);
 	int getDamage();
-	void Update(sf::RenderWindow& window);
+	void Update(sf::RenderWindow& window, float deltaTime);
 	void Cooldown();
 	int getLevel() { return level; }
 
@@ -26,6 +26,7 @@ private:
 	float cooldown_attack;
 	float cooldown_attack_temp;
 	bool firstAttack = false;
+	bool attack = false;
 	sf::Clock cooldown;
 	Animation animation;
 	unsigned int row;

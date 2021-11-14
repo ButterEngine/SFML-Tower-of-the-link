@@ -31,7 +31,7 @@ void HealingTower::Update(float deltatime)
 		aoe.setFillColor(sf::Color(51, 255, 85, 120));
 	}
 	cooldown_healing -= cooldown.restart().asSeconds();
-	animation.Update(row, deltatime);
+	animation.Update(row, deltatime, false);
 	body.setTextureRect(animation.uvRect);
 }
 
