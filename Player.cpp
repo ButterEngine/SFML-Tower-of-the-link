@@ -15,6 +15,8 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 	row = 0;
 	//player
 
+	mousePosWindowAttack = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
 	body.setSize(sf::Vector2f(261.0f, 234.0f));
 	body.setPosition(3840, 5000);
 	body.setOrigin(body.getSize() / 1.4f);
@@ -109,6 +111,7 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 	PlayerHPText.setFont(Gamefont);
 	StatueHpText.setFont(Gamefont);
 	WaveText.setFont(Gamefont);
+	WaveWordText.setFont(Gamefont);
 
 	PlayerHPText.setString("PLAYER HP");
 	PlayerHPText.setCharacterSize(160);
@@ -131,6 +134,13 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 	WaveText.setFillColor(sf::Color::Cyan);
 	WaveText.setOutlineColor(sf::Color::Black);
 	WaveText.setOutlineThickness(10);
+
+	WaveWordText.setString("WAVE");
+	WaveWordText.setCharacterSize(160);
+	WaveWordText.setPosition(3600.0f, 3460.0f);
+	WaveWordText.setFillColor(sf::Color::Cyan);
+	WaveWordText.setOutlineColor(sf::Color::Black);
+	WaveWordText.setOutlineThickness(10);
 
 	string Scorestring = to_string(Score);
 	ScoreText.setString(Scorestring);
@@ -313,6 +323,8 @@ void Player::Update(float deltatime, int map[64][64])
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		{
+			row = 4;
+			temp_row = 3;
 			if (map[Check_Player_Position().y][Check_Player_Position().x - 1] != 1)
 			{
 				movement.x -= speed * deltatime;
@@ -320,6 +332,8 @@ void Player::Update(float deltatime, int map[64][64])
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
+			row = 1;
+			temp_row = 0;
 			if (map[Check_Player_Position().y][Check_Player_Position().x + 1] != 1)
 			{
 				movement.x += speed * deltatime;
@@ -327,6 +341,7 @@ void Player::Update(float deltatime, int map[64][64])
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
+			row = temp_row + 1;
 			if (map[Check_Player_Position().y - 1][Check_Player_Position().x] != 1)
 			{
 				movement.y -= speed * deltatime;
@@ -334,6 +349,7 @@ void Player::Update(float deltatime, int map[64][64])
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		{
+			row = temp_row + 1;
 			if (map[Check_Player_Position().y + 1][Check_Player_Position().x] != 1)
 			{
 				movement.y += speed * deltatime;
@@ -343,16 +359,21 @@ void Player::Update(float deltatime, int map[64][64])
 
 	if (movement.x == 0.0f && movement.y == 0.0f)
 	{
-		row = 0;
-	}
-	else
-	{
-		row = 1;
+		row = temp_row;
 	}
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
-		row = 2;
+		if (sf::Mouse::getPosition().x > 960)
+		{
+			row = 2;
+			temp_row = 0;
+		}
+		else
+		{
+			row = 5;
+			temp_row = 3;
+		}
 		canwalk = false;
 	}
 
@@ -393,6 +414,7 @@ void Player::Update(float deltatime, int map[64][64])
 		StatueHpText.move(movement);
 
 		WaveText.move(movement);
+		WaveWordText.move(movement);
 	}
 }
 
@@ -417,6 +439,7 @@ void Player::Draw(sf::RenderWindow& window)
 	window.draw(StatueHpText);
 
 	window.draw(WaveText);
+	window.draw(WaveWordText);
 }
 
 

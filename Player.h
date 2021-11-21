@@ -29,6 +29,7 @@ public:
 	sf::RectangleShape getBody() { return this->body; }
 
 private:
+	sf::Vector2f mousePosWindowAttack;
 	sf::RectangleShape body;
 	sf::RectangleShape Healthbar;
 	sf::RectangleShape Healthbarframe;
@@ -53,11 +54,13 @@ private:
 	sf::Text PlayerHPText;
 	sf::Text StatueHpText;
 	sf::Text WaveText;
+	sf::Text WaveWordText;
 	Animation animation;
 	unsigned int row;
 	float speed;
 	float playerMaxHP = 100;
 	float statueMaxHP = 30;
 	bool blocked = false;
+	int temp_row = 0;
 };
 

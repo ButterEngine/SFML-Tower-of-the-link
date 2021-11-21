@@ -23,7 +23,7 @@ Enemy::Enemy(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, fl
 	this->Maxhealth = Health;
 	this->temp_wave = wave;
 	row = 0;
-	body.setSize(sf::Vector2f(120.0f, 120.0f));
+	body.setSize(sf::Vector2f(240.0f, 240.0f));
 	if (!special)
 	{
 		HealthBar.setSize(sf::Vector2f((this->Health / Maxhealth) * 120.0f, 20.0f));
@@ -35,18 +35,8 @@ Enemy::Enemy(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, fl
 		HealthBar.setSize(sf::Vector2f((this->Health / Maxhealth) * 120.0f, 20.0f));
 	}
 	HealthBar.setFillColor(sf::Color::Green);
-	if (wave == 1)
-	{
-		body.setFillColor(sf::Color::Red);
-	}
-	if (wave == 2)
-	{
-		body.setFillColor(sf::Color::Green);
-	}
-	if (wave == 3)
-	{
-		body.setFillColor(sf::Color::Magenta);
-	}
+	//FlyingEnemyTexture.loadFromFile("assets/texture/Monster/Flight_edited.png");
+	body.setTexture(texture);
 	body.setPosition(3840, 6000);
 	body.setOrigin(body.getSize() / 2.0f);
 	HealthBar.setPosition(3840.0f, 5900.0f);
@@ -67,6 +57,7 @@ void Enemy::Update(float deltatime, int map[64][64])
 		Maxhealth = 40 * temp_wave;
 		if (map[Check_Enemy_Position().y - 1][Check_Enemy_Position().x] == 3 || map[Check_Enemy_Position().y - 1][Check_Enemy_Position().x] == 1)
 		{
+			row = 0;
 			this->isUp = true;
 			this->isLeft = true;
 			movement.y -= speed * deltatime;
@@ -75,6 +66,7 @@ void Enemy::Update(float deltatime, int map[64][64])
 		{
 			if (this->isUp || this->isLeft)
 			{
+				row = 1;
 				this->isUp = false;
 				this->isLeft = true;
 				movement.x -= speed * deltatime;
@@ -115,6 +107,8 @@ void Enemy::Update(float deltatime, int map[64][64])
 	{
 		HealthBar.setFillColor(sf::Color::Red);
 	}
+	animation.Update(row, deltatime, false);
+	body.setTextureRect(animation.uvRect);
 }
 
 void Enemy::Attack(int damage)

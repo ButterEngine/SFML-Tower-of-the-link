@@ -1,29 +1,31 @@
 #include "Item.h"
 #include "Global_variable.h"
 
-Item::Item(int type, sf::Vector2f position)
+Item::Item(int type, sf::Vector2f position, sf::Texture* texture)
 {
+	cooldown_item = 7.0f;
 	this->type = type;
 	body.setPosition(position.x, position.y);
-	body.setSize(sf::Vector2f(60.0f, 60.0f));
-	if (type == 1)
-	{
-		body.setFillColor(sf::Color::Green);
-	}
-	if (type == 2)
-	{
-		body.setFillColor(sf::Color::Blue);
-	}
-	if (type == 3)
-	{
-		body.setFillColor(sf::Color::Yellow);
-	}
-	body.setTexture(&HealthPotion);
+	body.setSize(sf::Vector2f(120.0f, 120.0f));
+	body.setTexture(texture);
 }
 
 void Item::Draw()
 {
 	window.draw(body);
+}
+
+bool Item::EraseItem()
+{
+	cooldown_item -= cooldown.restart().asSeconds();
+	if (cooldown_item <= 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 int Item::getType()
@@ -52,9 +54,5 @@ void Item::Useitem(int type)
 	if (type == 3)
 	{
 		Coin += wave * 50;
-	}
-	if (type == 4)
-	{
-
 	}
 }

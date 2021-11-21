@@ -206,8 +206,15 @@ int main()
 		BuffTowerTexture.loadFromFile("assets/texture/Tower/Obelisk_effects.png");
 		HealingTowerTexture.loadFromFile("assets/texture/Tower/skull_tower_green_free_idle-Sheet.png");
 		aoetowerTexture.loadFromFile("assets/texture/Tower/AttackTowerSprite.png");
-		//playerTexture.loadFromFile("assets/texture/Tower/Obelisk_effects.png");
-		Player player(&playerTexture, sf::Vector2u(1, 1), 0.2f, 450.0f);
+		FlyingEnemyTexture.loadFromFile("assets/texture/Monster/Flight_edited.png");
+		SkeletonTexture.loadFromFile("assets/texture/Monster/Skeleton.png");
+		GoblinTexture.loadFromFile("assets/texture/Monster/Goblin.png");
+		MushroomTexture.loadFromFile("assets/texture/Monster/Mushroom.png");
+		playerTexture.loadFromFile("assets/texture/player/Player.png");
+		CoinTexture.loadFromFile("assets/texture/Item/Coin_Export.png");
+		HpPotionTexture.loadFromFile("assets/texture/Item/HpPotion.png");
+		StatuePotionTexture.loadFromFile("assets/texture/Item/StatuePotion.png");
+		Player player(&playerTexture, sf::Vector2u(8, 6), 0.125f, 450.0f);
 		MapHandler Map_01;
 		sf::Texture map;
 		sf::View view(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(5376, 3024));
@@ -262,9 +269,11 @@ int main()
 		bool HowToPlayMenu = false;
 		int Mouse_x;
 		string PlayerName;
+		int count_buff = 0;
 		int Mouse_y;
 		int Mouse_x_temp;
 		int Mouse_y_temp;
+		int EnemyNumber = 20;
 		int playerDamage = 10;
 		int aoeDamage = 0;
 		bool firstwave = true;
@@ -522,7 +531,7 @@ int main()
 			}
 			else if (isGameStart)
 			{
-				cout << "IN" << endl;
+				//cout << "IN" << endl;
 				//std::cout << "X = " << sf::Mouse::getPosition().x << "     " << "Y = " << sf::Mouse::getPosition().y << "\n";
 				cooldown_timer = cooldown.restart().asSeconds();
 				if (firstwave)
@@ -577,37 +586,61 @@ int main()
 						}
 						if (wave == 1)
 						{
-							Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
+							Enemy enemy1(&GoblinTexture, sf::Vector2u(8, 2), 0.125f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
 							arrayofEnemy.push_back(enemy1);
 							Enemy_Count++;
 						}
 						if (wave == 2)
 						{
-							Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
+							Enemy enemy1(&MushroomTexture, sf::Vector2u(8, 2), 0.125f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
 							arrayofEnemy.push_back(enemy1);
 							Enemy_Count++;
 						}
 						if (wave == 3)
 						{
-							Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
+							Enemy enemy1(&SkeletonTexture, sf::Vector2u(4, 2), 0.125f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
 							arrayofEnemy.push_back(enemy1);
 							Enemy_Count++;
 						}
 						if (wave >= 4)
 						{
-							Enemy enemy1(&enemytexture1, sf::Vector2u(1, 1), 0.2f, monsterSpeed, monsterHp * wave, enemydamage * wave, SpecialMonster);
-							arrayofEnemy.push_back(enemy1);
+							if (SpecialMonster)
+							{
+								Enemy enemy1(&FlyingEnemyTexture, sf::Vector2u(8, 1), 0.125f, monsterSpeed, monsterHp* wave, enemydamage* wave, SpecialMonster);
+								arrayofEnemy.push_back(enemy1);
+							}
+							else
+							{
+								if ((1 + rand() % 3) == 1)
+								{
+									Enemy enemy1(&GoblinTexture, sf::Vector2u(8, 2), 0.125f, monsterSpeed, monsterHp* wave, enemydamage* wave, SpecialMonster);
+									arrayofEnemy.push_back(enemy1);
+								}
+								else if ((1 + rand() % 3) == 2)
+								{
+									Enemy enemy1(&MushroomTexture, sf::Vector2u(8, 2), 0.125f, monsterSpeed, monsterHp* wave, enemydamage* wave, SpecialMonster);
+									arrayofEnemy.push_back(enemy1);
+								}
+								else if ((1 + rand() % 3) == 3)
+								{
+									Enemy enemy1(&SkeletonTexture, sf::Vector2u(4, 2), 0.125f, monsterSpeed, monsterHp* wave, enemydamage* wave, SpecialMonster);
+									arrayofEnemy.push_back(enemy1);
+								}
+							}
 							Enemy_Count++;
 						}
 						SpecialMonster = false;
 					}
 				}
-				if (Enemy_Count % 15 == 0 && Enemy_Count != temp_Enemy_Count)
+				//cout << (1 + rand() % 3) << endl;
+				if (Enemy_Count % EnemyNumber == 0 && Enemy_Count != temp_Enemy_Count)
 				{
+					Enemy_Count = 0;
+					EnemyNumber += 2;
 					WaveChangeCooldown = 10.0f;
 					temp_Enemy_Count = Enemy_Count;
 					wave += 1;
-					spawnCooldownMax -= 1.0f;
+					spawnCooldownMax -= 1.5f;
 					if (spawnCooldownMax < 15.0f)
 					{
 						spawnCooldownMax = 15.0f;
@@ -824,7 +857,7 @@ int main()
 						if (!(sf::Mouse::getPosition().x >= 1567 && (TowerMenu || UpgradeTowerMenu)))
 						{
 							cooldown_click = 1.0f;
-							Bullet arrow1(&bullettexture1, sf::Vector2f(30.0f, 30.0f), sf::Vector2f(player.getBody().getPosition().x, player.getBody().getPosition().y), rotation);
+							Bullet arrow1(&bullettexture1, sf::Vector2f(20.0f, 20.0f), sf::Vector2f(player.getBody().getPosition().x, player.getBody().getPosition().y), rotation);
 							arrow1.setvelo(aimDirNorm * 15.0f);
 							arrow1.getBody().setRotation(rotation);
 							arrayofBullet.push_back(arrow1);
@@ -883,8 +916,21 @@ int main()
 								if ((1 + rand() % 6) == 4)
 								{
 									itemType = (1 + rand() % 3);
-									Item Item1(itemType, arrayofEnemy[j].GetPostion());
-									arrayofItem.push_back(Item1);
+									if (itemType == 1)
+									{
+										Item Item1(itemType, arrayofEnemy[j].GetPostion(), &HpPotionTexture);
+										arrayofItem.push_back(Item1);
+									}
+									if (itemType == 2)
+									{
+										Item Item1(itemType, arrayofEnemy[j].GetPostion(), &StatuePotionTexture);
+										arrayofItem.push_back(Item1);
+									}
+									if (itemType == 3)
+									{
+										Item Item1(itemType, arrayofEnemy[j].GetPostion(), &CoinTexture);
+										arrayofItem.push_back(Item1);
+									}
 								}
 								arrayofEnemy.erase(arrayofEnemy.begin() + j);
 							}
@@ -931,30 +977,30 @@ int main()
 						arrayofHealingtower[i].Healing();
 					}
 				}
-
+				count_buff = 0;
 				for (int i = 0; i < arrayofBufftower.size(); i++)
 				{
-					int count_buff = 0;
+					bool check_tower = false;
 					if (arrayofBufftower[i].GetCollider().CheckCollision(player.GetCollider()))
 					{
 						count_buff++;
+						check_tower = true;
 						Buffed = true;
 					}
 					else if (count_buff == 0)
 					{
 						Buffed = false;
 					}
-					if (Buffed)
+					if (Buffed && check_tower)
 					{
 						click_interval = arrayofBufftower[i].Buff();
 					}
-					else
+					if(count_buff == 0)
 					{
 						click_interval = 0.0f;
 					}
+					//cout << count_buff << endl;
 				}
-
-
 				for (int i = 0; i < arrayofEnemy.size(); i++)
 				{
 					if (arrayofEnemy[i].getBody().getPosition().y <= 2640)
@@ -992,6 +1038,11 @@ int main()
 				}
 				for (int i = 0; i < arrayofItem.size(); i++)
 				{
+					if (arrayofItem[i].EraseItem())
+					{
+						arrayofItem.erase(arrayofItem.begin() + i);
+						continue;
+					}
 					if (arrayofItem[i].GetCollider().CheckCollision(player.GetCollider()))
 					{
 						arrayofItem[i].Useitem(arrayofItem[i].getType());
