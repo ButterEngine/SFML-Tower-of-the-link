@@ -6,6 +6,7 @@
 #include "MapHandler.h"
 #include <math.h>
 #include"Global_variable.h"
+#include <SFML/Audio.hpp>
 
 
 Enemy::Enemy(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, float Health, int damage, bool special) :
@@ -117,6 +118,7 @@ void Enemy::Attack(int damage)
 	{
 		cooldown_attack = 1;
 		playerHP -= damage;
+		PlayerHittedSound.play();
 	}
 }
 

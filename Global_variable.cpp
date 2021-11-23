@@ -25,6 +25,8 @@ sf::Texture MushroomTexture;
 sf::Texture CoinTexture;
 sf::Texture HpPotionTexture;
 sf::Texture StatuePotionTexture;
+sf::SoundBuffer PlayerHittedBuffer;
+sf::Sound PlayerHittedSound;
 vector <Item> arrayofItem;
 vector <Aoetower> arrayofAoetower;
 vector <HealingTower>arrayofHealingtower;

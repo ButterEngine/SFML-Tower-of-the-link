@@ -1,5 +1,6 @@
 #pragma once
 #include<SFML/Graphics.hpp>
+#include<SFML/Audio.hpp>
 #include"Player.h"
 #include<iostream>
 #include"Enemy.h"
@@ -41,6 +42,8 @@ extern sf::Texture MushroomTexture;
 extern sf::Texture CoinTexture;
 extern sf::Texture HpPotionTexture;
 extern sf::Texture StatuePotionTexture;
+extern sf::SoundBuffer PlayerHittedBuffer;
+extern sf::Sound PlayerHittedSound;
 extern int AttackBuildCost;
 extern int HealingBuildCost;
 extern int BuffBuildCost;
